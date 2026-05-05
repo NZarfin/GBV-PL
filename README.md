@@ -1,2 +1,0 @@
-# GBV-PL
-Picking Lists
