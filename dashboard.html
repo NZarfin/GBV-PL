@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaia Herbs — Warehouse</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #f5f5f7;
+  --surface:   #ffffff;
+  --surface2:  #f5f5f7;
+  --border:    #e0e0e5;
+  --border2:   #d0d0d8;
+  --text:      #1a1a1e;
+  --text2:     #6e6e7a;
+  --text3:     #aeaeb8;
+  --accent:    #1a7a4a;
+  --accent2:   #15643d;
+  --lime:      #34c759;
+  --warn:      #ff9500;
+  --danger:    #ff3b30;
+  --info:      #007aff;
+  --purple:    #af52de;
+  --shadow:    0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+  --shadow2:   0 2px 8px rgba(0,0,0,0.12), 0 8px 32px rgba(0,0,0,0.06);
+  --radius:    16px;
+  --radius-sm: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Sidebar layout ── */
+.layout { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 260px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; bottom: 0; left: 0;
+  z-index: 30;
+}
+
+.sidebar-top {
+  padding: 28px 24px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.brand {
+  display: flex; align-items: center; gap: 10px;
+}
+.brand-icon {
+  width: 36px; height: 36px;
+  background: var(--accent);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.brand-name {
+  font-size: 16px; font-weight: 700; letter-spacing: -0.3px;
+  color: var(--text);
+}
+.brand-sub {
+  font-size: 11px; color: var(--text2);
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 1px;
+}
+
+.sidebar-section { padding: 16px 12px 8px; }
+.sidebar-label {
+  font-size: 10px; font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase; letter-spacing: 1.2px;
+  padding: 0 12px; margin-bottom: 4px;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 14px; font-weight: 500;
+  color: var(--text2);
+  transition: all 0.15s;
+  text-decoration: none;
+  border: none; background: none; width: 100%; text-align: left;
+}
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: #e8f5ee; color: var(--accent); }
+.nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: white;
+  font-size: 11px; font-weight: 600;
+  padding: 2px 7px; border-radius: 20px;
+  min-width: 20px; text-align: center;
+}
+.nav-badge.warn { background: var(--warn); }
+.nav-badge.danger { background: var(--danger); }
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding: 16px 12px;
+  border-top: 1px solid var(--border);
+}
+.live-indicator {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px;
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  font-size: 12px; color: var(--text2);
+  font-family: 'JetBrains Mono', monospace;
+}
+.pulse-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--lime);
+  animation: pulse 2.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.8); }
+}
+
+/* ── Main content ── */
+.main { margin-left: 260px; flex: 1; }
+
+.topbar {
+  background: rgba(245,245,247,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 16px;
+}
+.page-title { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+/* Date filter pills */
+.date-filters {
+  display: flex; gap: 6px;
+}
+.date-pill {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  font-size: 13px; font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.date-pill:hover { border-color: var(--accent); color: var(--accent); }
+.date-pill.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+/* Status filter */
+.status-filter {
+  display: flex; gap: 6px; margin-left: 8px;
+}
+.status-pill {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  font-size: 12px; font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.status-pill.active-all      { background: var(--text);    border-color: var(--text);    color: white; }
+.status-pill.active-pending  { background: var(--warn);    border-color: var(--warn);    color: white; }
+.status-pill.active-progress { background: var(--info);    border-color: var(--info);    color: white; }
+.status-pill.active-done     { background: var(--lime);    border-color: var(--lime);    color: white; }
+.status-pill.active-updated  { background: var(--purple);  border-color: var(--purple);  color: white; }
+
+/* ── Stats row ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  padding: 24px 32px 0;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+.stat-label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.8px; }
+.stat-value { font-size: 30px; font-weight: 700; letter-spacing: -1px; margin-top: 4px; color: var(--text); }
+.stat-value.green  { color: var(--lime); }
+.stat-value.orange { color: var(--warn); }
+.stat-value.blue   { color: var(--info); }
+.stat-value.purple { color: var(--purple); }
+
+/* ── Orders table area ── */
+.orders-area { padding: 20px 32px 40px; }
+
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.section-title {
+  font-size: 13px; font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase; letter-spacing: 0.8px;
+}
+
+/* Date group header */
+.date-group-header {
+  display: flex; align-items: center; gap: 12px;
+  margin: 24px 0 10px;
+}
+.date-group-label {
+  font-size: 14px; font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.2px;
+}
+.date-group-line { flex: 1; height: 1px; background: var(--border); }
+.date-group-count {
+  font-size: 12px; color: var(--text2);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Order card */
+.order-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 10px;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.order-card:hover { box-shadow: var(--shadow2); border-color: var(--border2); }
+
+/* Left accent stripe */
+.order-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--border2);
+  border-radius: 16px 0 0 16px;
+}
+.order-card.status-pending::before    { background: var(--warn); }
+.order-card.status-assigned::before   { background: var(--info); }
+.order-card.status-in_progress::before{ background: var(--info); }
+.order-card.status-completed::before  { background: var(--lime); }
+.order-card.status-partial::before    { background: var(--warn); }
+.order-card.has-update::before        { background: var(--purple); }
+
+/* UPDATE BANNER */
+.update-banner {
+  display: none;
+  background: linear-gradient(135deg, #f3e8ff, #ede0ff);
+  border: 1px solid #c4a0f5;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: #5b21b6;
+}
+.update-banner.show { display: block; }
+.update-banner strong { font-weight: 700; }
+.update-actions { display: flex; gap: 8px; margin-top: 8px; }
+.btn-accept-update {
+  padding: 6px 14px; border-radius: 8px;
+  background: var(--purple); border: none; color: white;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+}
+.btn-dismiss-update {
+  padding: 6px 14px; border-radius: 8px;
+  background: transparent; border: 1.5px solid #c4a0f5; color: #5b21b6;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+}
+
+.order-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.order-left { flex: 1; }
+
+.order-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; font-weight: 500;
+  color: var(--text2);
+  margin-bottom: 3px;
+}
+.order-customer {
+  font-size: 17px; font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text);
+}
+.order-meta {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  margin-top: 6px;
+  font-size: 13px; color: var(--text2);
+}
+.order-meta span { display: flex; align-items: center; gap: 4px; }
+
+/* Status badge */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px; font-weight: 600;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+.badge-pending    { background: #fff3e0; color: #e65100; }
+.badge-assigned   { background: #e3f2fd; color: #0277bd; }
+.badge-in_progress{ background: #e3f2fd; color: #0277bd; }
+.badge-completed  { background: #e8f5e9; color: #2e7d32; }
+.badge-partial    { background: #fff3e0; color: #e65100; }
+.badge-updated    { background: #f3e8ff; color: #6b21a8; }
+
+/* Line chips */
+.line-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.chip {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 12px; color: var(--text2);
+  transition: border-color 0.15s;
+}
+.chip .chip-qty { font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; }
+.chip .chip-lot { color: var(--info); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+/* Action row */
+.order-actions { display: flex; align-items: center; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 18px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: var(--accent2); }
+.btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text2); }
+.btn-outline:hover { border-color: var(--text2); color: var(--text); }
+.btn-ghost { background: transparent; color: var(--text2); padding: 9px 12px; }
+.btn-ghost:hover { color: var(--text); }
+
+select.picker-select {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 8px 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  appearance: none;
+  padding-right: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236e6e7a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+select:focus { outline: none; border-color: var(--accent); }
+
+.picker-assigned-tag {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--text2);
+}
+.picker-assigned-tag .avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--accent);
+  color: white; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 40px;
+  color: var(--text2);
+}
+.empty-icon { font-size: 56px; margin-bottom: 16px; opacity: 0.4; }
+.empty-title { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.empty-sub { font-size: 14px; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 28px; right: 28px;
+  background: var(--text);
+  color: white;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 14px; font-weight: 500;
+  box-shadow: var(--shadow2);
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 999;
+  max-width: 320px;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* Reopen btn */
+.btn-reopen {
+  background: #f3e8ff; color: #6b21a8;
+  border: 1.5px solid #c4a0f5;
+  font-size: 12px; padding: 7px 14px;
+}
+.btn-reopen:hover { background: #ede0ff; }
+
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+  .topbar { padding: 14px 16px; flex-wrap: wrap; }
+  .orders-area { padding: 16px 16px 40px; }
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- ── Sidebar ── -->
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <div class="brand">
+      <div class="brand-icon">🌿</div>
+      <div>
+        <div class="brand-name">Gaia Herbs</div>
+        <div class="brand-sub">WAREHOUSE OPS</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Operations</div>
+    <a class="nav-item active" href="/">
+      <span class="nav-icon">📦</span>
+      Picking Lists
+      {% set pending_count = orders | selectattr('status','eq','pending') | list | length %}
+      {% if pending_count > 0 %}
+      <span class="nav-badge">{{ pending_count }}</span>
+      {% endif %}
+    </a>
+    <a class="nav-item" href="/api/orders" target="_blank">
+      <span class="nav-icon">🔗</span>
+      API
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Status</div>
+    {% set updated = orders | selectattr('has_update','defined') | selectattr('has_update','eq',true) | list | length %}
+    {% if updated > 0 %}
+    <div class="nav-item" style="color:var(--purple)">
+      <span class="nav-icon">⚡</span>
+      Updates pending
+      <span class="nav-badge" style="background:var(--purple)">{{ updated }}</span>
+    </div>
+    {% endif %}
+    {% set partial = orders | selectattr('status','eq','partial') | list | length %}
+    {% if partial > 0 %}
+    <div class="nav-item" style="color:var(--warn)">
+      <span class="nav-icon">⚠️</span>
+      Exceptions
+      <span class="nav-badge warn">{{ partial }}</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="live-indicator">
+      <div class="pulse-dot"></div>
+      Polling inbox
+    </div>
+  </div>
+</aside>
+
+<!-- ── Main ── -->
+<div class="main">
+
+  <div class="topbar">
+    <div class="page-title">Picking Lists</div>
+    <div class="topbar-right">
+
+      <!-- Date filter pills -->
+      <div class="date-filters" id="date-filters">
+        <button class="date-pill active" data-date="all" onclick="filterDate('all',this)">All dates</button>
+        {% set dates_seen = [] %}
+        {% for order in orders %}
+          {% if order.departure_date and order.departure_date not in dates_seen %}
+            {% set _ = dates_seen.append(order.departure_date) %}
+            <button class="date-pill" data-date="{{ order.departure_date }}"
+                    onclick="filterDate('{{ order.departure_date }}',this)">
+              📅 {{ order.departure_date }}
+            </button>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Status filter -->
+      <div class="status-filter">
+        <button class="status-pill active-all" data-status="all" onclick="filterStatus('all',this)">All</button>
+        <button class="status-pill" data-status="pending"     onclick="filterStatus('pending',this)">Pending</button>
+        <button class="status-pill" data-status="in_progress" onclick="filterStatus('in_progress',this)">Active</button>
+        <button class="status-pill" data-status="completed"   onclick="filterStatus('completed',this)">Done</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    {% set total     = orders | length %}
+    {% set pending   = orders | selectattr('status','eq','pending')     | list | length %}
+    {% set active    = orders | selectattr('status','in',['assigned','in_progress']) | list | length %}
+    {% set completed = orders | selectattr('status','in',['completed','partial']) | list | length %}
+    {% set updated   = orders | selectattr('has_update', 'defined') | selectattr('has_update','equalto',true) | list | length %}
+    <div class="stat-card">
+      <div class="stat-label">Total Orders</div>
+      <div class="stat-value">{{ total }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pending</div>
+      <div class="stat-value orange">{{ pending }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">In Progress</div>
+      <div class="stat-value blue">{{ active }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Completed</div>
+      <div class="stat-value green">{{ completed }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Updates</div>
+      <div class="stat-value purple">{{ updated }}</div>
+    </div>
+  </div>
+
+  <!-- Orders list -->
+  <div class="orders-area">
+
+    {% if not orders %}
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <div class="empty-title">No orders yet</div>
+      <div class="empty-sub">Waiting for XML emails at pickinglists@gaiaherbs.nl</div>
+    </div>
+
+    {% else %}
+
+    {% set ns = namespace(cur_date='') %}
+    {% for order in orders | sort(attribute='departure_date') %}
+
+      {% if order.departure_date != ns.cur_date %}
+        {% set ns.cur_date = order.departure_date %}
+        <div class="date-group-header" data-date-header="{{ order.departure_date }}">
+          <div class="date-group-label">
+            {% if order.departure_date == today %} 📅 Today — {{ order.departure_date }}
+            {% elif order.departure_date == tomorrow %} 📅 Tomorrow — {{ order.departure_date }}
+            {% else %} 📅 {{ order.departure_date }}
+            {% endif %}
+          </div>
+          <div class="date-group-line"></div>
+          <div class="date-group-count">
+            {{ orders | selectattr('departure_date','eq',order.departure_date) | list | length }} orders
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="order-card status-{{ order.status }} {% if order.has_update %}has-update{% endif %}"
+           id="card-{{ order.order_id }}"
+           data-date="{{ order.departure_date }}"
+           data-status="{{ order.status }}">
+
+        <!-- Update banner -->
+        {% if order.has_update %}
+        <div class="update-banner show" id="update-banner-{{ order.order_id }}">
+          <strong>⚡ Order updated</strong> — This order was re-sent with changes.<br>
+          <span style="font-size:12px">
+            {% if order.update_diff %}
+              {{ order.update_diff }}
+            {% else %}
+              New version received. Review and confirm changes.
+            {% endif %}
+          </span>
+          <div class="update-actions">
+            <button class="btn-accept-update" onclick="acceptUpdate('{{ order.order_id }}')">✓ Accept changes</button>
+            <button class="btn-dismiss-update" onclick="dismissUpdate('{{ order.order_id }}')">Keep original</button>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="order-top">
+          <div class="order-left">
+            <div class="order-id">#{{ order.order_id }}</div>
+            <div class="order-customer">{{ order.customer or '—' }}</div>
+            <div class="order-meta">
+              <span>📅 {{ order.departure_date }}</span>
+              {% if order.sale_date %}<span>🗓 {{ order.sale_date }}</span>{% endif %}
+              <span>👤 {{ order.handled_by }}</span>
+              {% if order.delivery_terms %}<span>🚚 {{ order.delivery_terms }}</span>{% endif %}
+              {% if order.carrier %}<span>🚛 {{ order.carrier }}</span>{% endif %}
+              <span>📋 {{ order.lines|length }} items</span>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+            <span class="badge badge-{{ 'updated' if order.has_update else order.status }}">
+              {% if order.has_update %}⚡ Updated
+              {% elif order.status == 'pending' %}● Pending
+              {% elif order.status in ['assigned','in_progress'] %}● In Progress
+              {% elif order.status == 'completed' %}✓ Completed
+              {% elif order.status == 'partial' %}⚠ Exceptions
+              {% endif %}
+            </span>
+            {% if order.completed_at %}
+            <div style="font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace">
+              {{ order.completed_at[:16] | replace('T',' ') }}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Line chips -->
+        <div class="line-chips">
+          {% for line in order.lines %}
+          <div class="chip {% if line.status=='picked' %}style="border-color:#c8e6c9"{% endif %}">
+            <span class="chip-qty">{{ line.qty }}×</span>
+            <span>{{ line.product }}</span>
+            {% if line.lot %}<span class="chip-lot">{{ line.lot }}</span>{% endif %}
+            {% if line.status == 'picked' %}<span style="color:var(--lime)">✓</span>
+            {% elif line.status == 'short' %}<span style="color:var(--warn)">⚠</span>
+            {% elif line.status == 'missing' %}<span style="color:var(--danger)">✕</span>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Actions -->
+        <div class="order-actions">
+          {% if order.status == 'pending' %}
+            <select class="picker-select" id="picker-{{ order.order_id }}">
+              {% for p in pickers %}
+              <option value="{{ loop.index0 }}">{{ p.name }}</option>
+              {% endfor %}
+            </select>
+            <button class="btn btn-primary" onclick="assignOrder('{{ order.order_id }}')">
+              Send to Picker →
+            </button>
+
+          {% elif order.status in ['assigned','in_progress'] %}
+            <div class="picker-assigned-tag">
+              <div class="avatar">{{ order.picker.name[0] if order.picker else '?' }}</div>
+              {{ order.picker.name if order.picker else 'Unassigned' }}
+            </div>
+            <a class="btn btn-outline" href="/pick/{{ order.order_id }}" target="_blank">View List</a>
+            <button class="btn btn-ghost" onclick="copyLink('{{ order.order_id }}')">Copy Link</button>
+
+          {% elif order.status in ['completed','partial'] %}
+            <div class="picker-assigned-tag">
+              <div class="avatar">{{ order.picker.name[0] if order.picker else '?' }}</div>
+              {{ order.picker.name if order.picker else '—' }}
+            </div>
+            <a class="btn btn-outline" href="/pick/{{ order.order_id }}" target="_blank">View Result</a>
+            <button class="btn btn-reopen" onclick="reopenOrder('{{ order.order_id }}')">↩ Reopen</button>
+          {% endif %}
+        </div>
+
+      </div>
+    {% endfor %}
+    {% endif %}
+
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let activeDateFilter   = 'all';
+let activeStatusFilter = 'all';
+
+function applyFilters() {
+  // Order cards
+  document.querySelectorAll('.order-card').forEach(card => {
+    const dateMatch   = activeDateFilter   === 'all' || card.dataset.date   === activeDateFilter;
+    const statusMatch = activeStatusFilter === 'all' || card.dataset.status === activeStatusFilter
+                     || (activeStatusFilter === 'in_progress' && card.dataset.status === 'assigned');
+    card.style.display = (dateMatch && statusMatch) ? '' : 'none';
+  });
+  // Date group headers — hide if no visible cards underneath
+  document.querySelectorAll('[data-date-header]').forEach(header => {
+    const date = header.dataset.dateHeader;
+    const hasVisible = [...document.querySelectorAll(`.order-card[data-date="${date}"]`)]
+      .some(c => c.style.display !== 'none');
+    header.style.display = hasVisible ? '' : 'none';
+  });
+}
+
+function filterDate(date, btn) {
+  activeDateFilter = date;
+  document.querySelectorAll('.date-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function filterStatus(status, btn) {
+  activeStatusFilter = status;
+  document.querySelectorAll('.status-pill').forEach(b => {
+    b.className = 'status-pill';
+  });
+  btn.classList.add('active-' + (status === 'in_progress' ? 'progress' : status));
+  applyFilters();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+async function assignOrder(orderId) {
+  const sel = document.getElementById('picker-' + orderId);
+  const res = await fetch('/assign/' + orderId, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({picker_idx: parseInt(sel.value)})
+  });
+  const data = await res.json();
+  if (data.wa_url) {
+    window.open(data.wa_url, '_blank');
+    showToast('📲 WhatsApp opened — forward the link to the picker');
+  } else {
+    prompt('Copy this link and send to the picker:', data.pick_url);
+  }
+  setTimeout(() => location.reload(), 1200);
+}
+
+function copyLink(orderId) {
+  const url = window.location.origin + '/pick/' + orderId;
+  navigator.clipboard.writeText(url).then(() => showToast('Link copied to clipboard'));
+}
+
+async function reopenOrder(orderId) {
+  await fetch('/reopen/' + orderId, {method:'POST'});
+  showToast('Order reopened');
+  setTimeout(() => location.reload(), 800);
+}
+
+async function acceptUpdate(orderId) {
+  await fetch('/accept_update/' + orderId, {method:'POST'});
+  showToast('✅ Changes accepted');
+  setTimeout(() => location.reload(), 800);
+}
+
+async function dismissUpdate(orderId) {
+  await fetch('/dismiss_update/' + orderId, {method:'POST'});
+  showToast('Update dismissed — original kept');
+  setTimeout(() => location.reload(), 800);
+}
+
+// Auto-refresh every 45s
+setTimeout(() => location.reload(), 45000);
+</script>
+</body>
+</html>
