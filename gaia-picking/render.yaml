@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: gaia-picking
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 4
+    envVars:
+      - key: IMAP_HOST
+        value: imap.strato.de
+      - key: IMAP_PORT
+        value: 993
+      - key: IMAP_USER
+        value: Pickinglists@gaiaherbs.nl
+      - key: IMAP_PASS
+        sync: false
+      - key: POLL_INTERVAL
+        value: 60
+      - key: BASE_URL
+        sync: false

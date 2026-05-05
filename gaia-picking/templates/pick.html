@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Pick #{{ order.order_id }}</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:  #1a7a4a;
+    --lime:   #b8f04a;
+    --dark:   #0e1a13;
+    --mid:    #1c2e21;
+    --card:   #192a1e;
+    --border: #2a3f30;
+    --text:   #e8f5ec;
+    --muted:  #7aaa88;
+    --warn:   #f0a500;
+    --done:   #22a05e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 120px;
+  }
+
+  .top-bar {
+    background: var(--mid);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .order-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .order-id {
+    font-family: 'DM Mono', monospace;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--lime);
+  }
+  .order-customer { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  .progress-bar {
+    margin-top: 10px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--lime);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .progress-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  .meta-strip {
+    display: flex;
+    gap: 16px;
+    padding: 12px 20px;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+
+  .lines { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+
+  .line-item {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .line-item:active { transform: scale(0.98); }
+  .line-item.picked {
+    border-color: var(--done);
+    background: #0d2016;
+  }
+  .line-item.picked::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(34,160,94,0.06);
+    pointer-events: none;
+  }
+
+  .line-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .line-product {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
+    flex: 1;
+  }
+  .line-item.picked .line-product { color: var(--muted); text-decoration: line-through; }
+
+  .check-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+    transition: all 0.15s;
+  }
+  .line-item.picked .check-circle {
+    background: var(--done);
+    border-color: var(--done);
+  }
+
+  .line-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .meta-tag {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+  }
+  .meta-tag.qty { color: var(--lime); font-weight: 500; }
+
+  .bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0; right: 0;
+    background: var(--mid);
+    border-top: 1px solid var(--border);
+    padding: 16px 20px;
+    z-index: 10;
+  }
+
+  .manager-row {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .manager-label {
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  select {
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 7px 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    flex: 1;
+  }
+
+  .complete-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    border: none;
+    background: var(--lime);
+    color: var(--dark);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .complete-btn:active { transform: scale(0.98); background: #ceff60; }
+  .complete-btn:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+  /* Completed overlay */
+  .done-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--dark);
+    z-index: 100;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+  }
+  .done-overlay.show { display: flex; }
+  .done-icon { font-size: 72px; margin-bottom: 20px; }
+  .done-title { font-size: 28px; font-weight: 700; color: var(--lime); }
+  .done-sub { color: var(--muted); margin-top: 8px; font-size: 14px; }
+  .done-wa {
+    margin-top: 32px;
+    padding: 16px 28px;
+    border-radius: 12px;
+    background: #25D366;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .done-wa:active { opacity: 0.85; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="order-header">
+    <div>
+      <div class="order-id">Order #{{ order.order_id }}</div>
+      <div class="order-customer">{{ order.customer }}</div>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--lime)" id="counter">
+      0 / {{ order.lines | length }}
+    </div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+  <div class="progress-text" id="prog-text">Tap items to mark as picked</div>
+</div>
+
+<div class="meta-strip">
+  <span>📅 {{ order.departure_date }}</span>
+  <span>👤 {{ order.handled_by }}</span>
+  {% if order.delivery_terms %}<span>🚚 {{ order.delivery_terms }}</span>{% endif %}
+</div>
+
+<div class="lines" id="lines">
+  {% for line in order.lines %}
+  <div class="line-item {% if line.picked %}picked{% endif %}"
+       id="line-{{ loop.index0 }}"
+       onclick="toggleLine({{ loop.index0 }}, this)">
+    <div class="line-top">
+      <div class="line-product">{{ line.product }}</div>
+      <div class="check-circle" id="check-{{ loop.index0 }}">
+        {% if line.picked %}✓{% endif %}
+      </div>
+    </div>
+    <div class="line-meta">
+      <span class="meta-tag qty">× {{ line.qty }} {{ line.unit }}</span>
+      {% if line.size %}<span class="meta-tag">{{ line.size }}</span>{% endif %}
+      {% if line.country %}<span class="meta-tag">🌍 {{ line.country }}</span>{% endif %}
+      {% if line.pallet %}<span class="meta-tag">🪵 {{ line.pallet }}</span>{% endif %}
+      {% if line.lot %}<span class="meta-tag">Lot: {{ line.lot }}</span>{% endif %}
+      {% if line.grower %}<span class="meta-tag">🌱 {{ line.grower }}</span>{% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="bottom-bar">
+  <div class="manager-row">
+    <span class="manager-label">Notify manager:</span>
+    <select id="manager-select">
+      {% for m in managers %}
+      <option value="{{ loop.index0 }}">{{ m.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <button class="complete-btn" id="complete-btn" onclick="completeOrder()">
+    ✅ Complete Picking List
+  </button>
+</div>
+
+<!-- Done overlay -->
+<div class="done-overlay" id="done-overlay">
+  <div class="done-icon">🎉</div>
+  <div class="done-title">All done!</div>
+  <div class="done-sub" id="done-sub">Order #{{ order.order_id }} completed</div>
+  <a href="#" id="wa-link" class="done-wa" target="_blank">
+    📲 Send WhatsApp to Manager
+  </a>
+</div>
+
+<script>
+const totalLines = {{ order.lines | length }};
+const checked = new Set(
+  {% set picked_indices = [] %}
+  {% for line in order.lines %}{% if line.picked %}{{ loop.index0 }},{% endif %}{% endfor %}
+  [{% for line in order.lines %}{% if line.picked %}{{ loop.index0 }},{% endif %}{% endfor %}]
+);
+
+function updateProgress() {
+  const n = checked.size;
+  document.getElementById('counter').textContent = n + ' / ' + totalLines;
+  document.getElementById('progress').style.width = (n / totalLines * 100) + '%';
+  const all = n === totalLines;
+  document.getElementById('prog-text').textContent = all
+    ? '✅ All items picked — ready to complete!'
+    : 'Tap items to mark as picked';
+}
+
+function toggleLine(idx, el) {
+  {% if order.status == 'completed' %}return;{% endif %}
+  if (checked.has(idx)) {
+    checked.delete(idx);
+    el.classList.remove('picked');
+    document.getElementById('check-' + idx).textContent = '';
+  } else {
+    checked.add(idx);
+    el.classList.add('picked');
+    document.getElementById('check-' + idx).textContent = '✓';
+  }
+  updateProgress();
+}
+
+async function completeOrder() {
+  const btn = document.getElementById('complete-btn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  const managerIdx = document.getElementById('manager-select').value;
+
+  const res = await fetch('/complete/{{ order.order_id }}', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      checked: Array.from(checked),
+      manager_idx: parseInt(managerIdx)
+    })
+  });
+  const data = await res.json();
+
+  const picked = checked.size;
+  const missing = totalLines - picked;
+  document.getElementById('done-sub').textContent =
+    picked + '/' + totalLines + ' items picked' + (missing > 0 ? ' — ⚠️ ' + missing + ' missing' : ' — All good!');
+
+  if (data.wa_url) {
+    document.getElementById('wa-link').href = data.wa_url;
+  } else {
+    // No phone set — show message text to copy
+    document.getElementById('wa-link').onclick = function(e) {
+      e.preventDefault();
+      alert(data.msg);
+    };
+    document.getElementById('wa-link').textContent = '📋 Copy confirmation message';
+  }
+
+  document.getElementById('done-overlay').classList.add('show');
+}
+
+updateProgress();
+</script>
+</body>
+</html>

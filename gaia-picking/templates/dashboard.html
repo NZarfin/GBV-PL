@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaia Herbs — Picking Lists</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:   #1a7a4a;
+    --green2:  #22a05e;
+    --lime:    #b8f04a;
+    --dark:    #0e1a13;
+    --mid:     #1c2e21;
+    --card:    #192a1e;
+    --border:  #2a3f30;
+    --text:    #e8f5ec;
+    --muted:   #7aaa88;
+    --warn:    #f0a500;
+    --danger:  #e05050;
+    --radius:  12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--mid);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+  .logo span { color: var(--lime); }
+  .subtitle { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .live-dot {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--lime);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+  }
+
+  main { padding: 24px; max-width: 1100px; margin: 0 auto; }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .stat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+  }
+  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .stat-value { font-size: 32px; font-weight: 700; margin-top: 4px; }
+  .stat-value.green  { color: var(--lime); }
+  .stat-value.warn   { color: var(--warn); }
+  .stat-value.blue   { color: #7ad4f0; }
+  .stat-value.done   { color: var(--green2); }
+
+  .section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+  }
+
+  .orders { display: flex; flex-direction: column; gap: 12px; }
+
+  .order-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+  .order-card:hover { border-color: var(--green2); }
+  .order-card.status-completed { opacity: 0.6; }
+
+  .order-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .order-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--lime);
+  }
+  .order-customer { font-size: 15px; font-weight: 600; margin-top: 4px; }
+  .order-meta {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);
+    margin-top: 8px;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .badge-pending    { background: #2a2010; color: var(--warn); border: 1px solid #5a4010; }
+  .badge-assigned   { background: #102030; color: #7ad4f0;    border: 1px solid #1a4060; }
+  .badge-in_progress{ background: #1a2a10; color: var(--lime); border: 1px solid #3a5020; }
+  .badge-completed  { background: #102010; color: var(--green2); border: 1px solid #1a4020; }
+
+  .order-lines {
+    margin-top: 14px;
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .line-chip {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: var(--text);
+  }
+  .line-chip .qty { color: var(--lime); font-weight: 600; margin-right: 4px; }
+
+  .order-actions { margin-top: 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+  select {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 8px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  select:focus { outline: none; border-color: var(--green2); }
+
+  .btn {
+    padding: 9px 18px;
+    border-radius: 8px;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-primary { background: var(--lime); color: var(--dark); }
+  .btn-primary:hover { background: #ceff60; }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .picker-assigned {
+    font-size: 12px; color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+  .picker-assigned strong { color: var(--text); }
+
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+  }
+  .empty-icon { font-size: 48px; margin-bottom: 16px; }
+
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--mid); border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    font-size: 13px;
+    max-width: 320px;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 999;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  @media (max-width: 600px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    main { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Gaia <span>Herbs</span></div>
+    <div class="subtitle">PICKING LIST DASHBOARD</div>
+  </div>
+  <div class="live-dot"><div class="dot"></div> LIVE — polling inbox</div>
+</header>
+
+<main>
+  {% set pending   = orders | selectattr('status', 'eq', 'pending')     | list %}
+  {% set assigned  = orders | selectattr('status', 'in', ['assigned','in_progress']) | list %}
+  {% set completed = orders | selectattr('status', 'eq', 'completed')   | list %}
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-label">Total today</div>
+      <div class="stat-value blue">{{ orders | length }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Pending</div>
+      <div class="stat-value warn">{{ pending | length }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">In progress</div>
+      <div class="stat-value green">{{ assigned | length }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Completed</div>
+      <div class="stat-value done">{{ completed | length }}</div>
+    </div>
+  </div>
+
+  <div class="section-title">Orders</div>
+
+  <div class="orders">
+    {% if not orders %}
+    <div class="empty">
+      <div class="empty-icon">📭</div>
+      No orders yet — waiting for XML emails
+    </div>
+    {% endif %}
+
+    {% for order in orders %}
+    <div class="order-card status-{{ order.status }}" id="card-{{ order.order_id }}">
+      <div class="order-top">
+        <div>
+          <div class="order-num">#{{ order.order_id }}</div>
+          <div class="order-customer">{{ order.customer }}</div>
+          <div class="order-meta">
+            <span>📅 {{ order.departure_date }}</span>
+            <span>👤 {{ order.handled_by }}</span>
+            <span>📦 {{ order.lines | length }} items</span>
+            {% if order.delivery_terms %}<span>🚚 {{ order.delivery_terms }}</span>{% endif %}
+          </div>
+        </div>
+        <div>
+          <span class="badge badge-{{ order.status }}">{{ order.status | replace('_', ' ') }}</span>
+        </div>
+      </div>
+
+      <div class="order-lines">
+        {% for line in order.lines %}
+        <div class="line-chip">
+          <span class="qty">{{ line.qty }}×</span>{{ line.product }}
+          {% if line.size %} <span style="color:var(--muted)">{{ line.size }}</span>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="order-actions">
+        {% if order.status == 'pending' %}
+          <select id="picker-{{ order.order_id }}">
+            {% for p in pickers %}
+            <option value="{{ loop.index0 }}">{{ p.name }}</option>
+            {% endfor %}
+          </select>
+          <button class="btn btn-primary" onclick="assignOrder('{{ order.order_id }}')">
+            📤 Send to Picker
+          </button>
+        {% elif order.status in ['assigned', 'in_progress'] %}
+          <span class="picker-assigned">Assigned to <strong>{{ order.picker.name }}</strong></span>
+          <a class="btn btn-ghost" href="/pick/{{ order.order_id }}" target="_blank">👁 View List</a>
+        {% elif order.status == 'completed' %}
+          <span class="picker-assigned">✅ Completed by <strong>{{ order.picker.name }}</strong> at {{ order.completed_at[:16] | replace('T',' ') }}</span>
+          <a class="btn btn-ghost" href="/pick/{{ order.order_id }}" target="_blank">👁 View</a>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+async function assignOrder(orderId) {
+  const sel = document.getElementById('picker-' + orderId);
+  const pickerIdx = sel.value;
+
+  const res = await fetch('/assign/' + orderId, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({picker_idx: pickerIdx})
+  });
+  const data = await res.json();
+
+  if (data.wa_url) {
+    window.open(data.wa_url, '_blank');
+  } else {
+    // No phone number set — show the link to copy manually
+    prompt('No WhatsApp number set for this picker. Copy this link:', data.pick_url);
+  }
+
+  showToast('Order assigned — WhatsApp opened!');
+  setTimeout(() => location.reload(), 1500);
+}
+
+// Auto-refresh every 30 seconds
+setTimeout(() => location.reload(), 30000);
+</script>
+</body>
+</html>
