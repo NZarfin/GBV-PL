@@ -17,3 +17,5 @@ services:
         value: 60
       - key: BASE_URL
         sync: false
+      - key: DATABASE_URL
+        sync: false

@@ -8,6 +8,9 @@ import logging
 from datetime import datetime, date, timedelta
 from flask import Flask, render_template, request, jsonify
 from urllib.parse import quote
+import json
+import psycopg2
+import psycopg2.extras
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -21,9 +24,69 @@ IMAP_USER     = os.getenv("IMAP_USER",     "Pickinglists@gaiaherbs.nl")
 IMAP_PASS     = os.getenv("IMAP_PASS",     "Gaiabv1122!")
 POLL_INTERVAL = int(os.getenv("POLL_INTERVAL", 60))
 BASE_URL      = os.getenv("BASE_URL",      "http://localhost:64182")
+DATABASE_URL  = os.getenv("DATABASE_URL",  "")
 
 # ── In-memory store ───────────────────────────────────────────────────────────
 orders = {}   # order_id -> order dict
+
+
+# -- Database helpers
+def _get_db():
+    return psycopg2.connect(DATABASE_URL)
+
+def init_db():
+    if not DATABASE_URL:
+        logger.warning("DATABASE_URL not set - running without persistence")
+        return
+    try:
+        conn = _get_db()
+        cur  = conn.cursor()
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS orders (
+                order_id   TEXT PRIMARY KEY,
+                data       JSONB NOT NULL,
+                updated_at TIMESTAMP DEFAULT NOW()
+            )
+        """)
+        conn.commit()
+        cur.close()
+        conn.close()
+        logger.info("Database ready")
+    except Exception as e:
+        logger.error(f"DB init error: {e}")
+
+def load_all_orders():
+    if not DATABASE_URL:
+        return
+    try:
+        conn = _get_db()
+        cur  = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cur.execute("SELECT order_id, data FROM orders")
+        for row in cur.fetchall():
+            orders[row["order_id"]] = row["data"]
+        cur.close()
+        conn.close()
+        logger.info(f"Loaded {len(orders)} order(s) from database")
+    except Exception as e:
+        logger.error(f"DB load error: {e}")
+
+def save_order(order_id):
+    if not DATABASE_URL or order_id not in orders:
+        return
+    try:
+        conn = _get_db()
+        cur  = conn.cursor()
+        cur.execute("""
+            INSERT INTO orders (order_id, data, updated_at)
+            VALUES (%s, %s, NOW())
+            ON CONFLICT (order_id) DO UPDATE
+                SET data = EXCLUDED.data, updated_at = NOW()
+        """, (order_id, json.dumps(orders[order_id])))
+        conn.commit()
+        cur.close()
+        conn.close()
+    except Exception as e:
+        logger.error(f"DB save error for {order_id}: {e}")
 
 # ── People config — fill in phones when ready ─────────────────────────────────
 PICKERS = [
@@ -264,6 +327,7 @@ def assign(order_id):
         "status":      "assigned",
         "assigned_at": datetime.now().isoformat(),
     })
+    save_order(order_id)
 
     pick_url = f"{BASE_URL}/pick/{order_id}"
     order    = orders[order_id]
@@ -290,6 +354,7 @@ def pick(order_id):
     order = orders[order_id]
     if order["status"] in ("assigned", "pending"):
         orders[order_id]["status"] = "in_progress"
+        save_order(order_id)
     return render_template("pick.html", order=order, managers=MANAGERS, base_url=BASE_URL)
 
 
@@ -302,6 +367,7 @@ def update_line(order_id, line_idx):
     line["status"]    = data.get("status",    line["status"])
     line["short_qty"] = data.get("short_qty", line["short_qty"])
     line["note"]      = data.get("note",      line["note"])
+    save_order(order_id)
     return jsonify({"ok": True})
 
 
@@ -321,6 +387,7 @@ def complete(order_id):
     final_status = "completed" if (short == 0 and missing == 0) else "partial"
     orders[order_id]["status"]       = final_status
     orders[order_id]["completed_at"] = datetime.now().isoformat()
+    save_order(order_id)
 
     manager = MANAGERS[manager_idx]
     picker  = order.get("picker") or {}
@@ -360,6 +427,7 @@ def reopen(order_id):
         return jsonify({"error": "not found"}), 404
     orders[order_id]["status"]       = "in_progress"
     orders[order_id]["completed_at"] = None
+    save_order(order_id)
     return jsonify({"ok": True})
 
 
@@ -378,6 +446,7 @@ def accept_update(order_id):
     # If completed, reopen so picker can pick the new items
     if orders[order_id]["status"] in ("completed", "partial"):
         orders[order_id]["status"] = "in_progress"
+    save_order(order_id)
     return jsonify({"ok": True})
 
 
@@ -389,6 +458,7 @@ def dismiss_update(order_id):
     orders[order_id]["has_update"]    = False
     orders[order_id]["update_diff"]   = ""
     orders[order_id]["pending_lines"] = []
+    save_order(order_id)
     return jsonify({"ok": True})
 
 
@@ -405,6 +475,7 @@ def test_load():
             order = parse_picking_xml(f.read())
         if order:
             orders[order["order_id"]] = order
+            save_order(order["order_id"])
             return (f"✅ Loaded #{order['order_id']} — {len(order['lines'])} lines<br><br>"
                     + "<br>".join(
                         f"• {l['product']} | qty:{l['qty']} {l['unit']} | "
@@ -414,6 +485,9 @@ def test_load():
                     ))
     return "sample.xml not found", 404
 
+
+init_db()
+load_all_orders()
 
 if __name__ == "__main__":
     t = threading.Thread(target=poll_inbox, daemon=True)
