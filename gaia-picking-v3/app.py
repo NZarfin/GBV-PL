@@ -489,7 +489,9 @@ def test_load():
 init_db()
 load_all_orders()
 
+# Start poller regardless of how the app is launched (gunicorn or direct)
+_t = threading.Thread(target=poll_inbox, daemon=True)
+_t.start()
+
 if __name__ == "__main__":
-    t = threading.Thread(target=poll_inbox, daemon=True)
-    t.start()
     app.run(host="0.0.0.0", port=64182, debug=True)
