@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Not Assigned</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: #f2f2f7;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; padding: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+.card {
+  background: white; border-radius: 20px;
+  padding: 40px 32px; text-align: center;
+  max-width: 340px; width: 100%;
+}
+.icon { font-size: 52px; margin-bottom: 16px; }
+h2 { font-size: 22px; font-weight: 800; color: #1c1c1e; margin-bottom: 8px; }
+p  { font-size: 14px; color: #6c6c70; line-height: 1.5; }
+a  {
+  display: block; margin-top: 24px;
+  padding: 13px; border-radius: 12px;
+  background: #1a7a4a; color: white;
+  text-decoration: none; font-weight: 700; font-size: 15px;
+}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="icon">🔒</div>
+  <h2>Not assigned to you</h2>
+  <p>Order #{{ order_id }} is assigned to a different picker. Contact your manager if you think this is a mistake.</p>
+  <a href="/">← Back to my picks</a>
+</div>
+</body>
+</html>

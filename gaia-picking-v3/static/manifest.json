@@ -1,0 +1,11 @@
+{
+  "name": "Gaia Herbs Warehouse",
+  "short_name": "Gaia Pick",
+  "description": "Warehouse picking list app",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f2f2f7",
+  "theme_color": "#1a7a4a",
+  "icons": []
+}

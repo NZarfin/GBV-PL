@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Gaia Warehouse">
+<link rel="manifest" href="/static/manifest.json">
 <title>Gaia Herbs — Warehouse</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -31,330 +34,196 @@
 html { font-size: 15px; }
 body {
   font-family: 'Outfit', sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--bg); color: var(--text);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Sidebar layout ── */
+/* ── Layout ── */
 .layout { display: flex; min-height: 100vh; }
-
 .sidebar {
-  width: 260px;
-  background: var(--surface);
+  width: 260px; background: var(--surface);
   border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0; bottom: 0; left: 0;
-  z-index: 30;
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; bottom: 0; left: 0; z-index: 30;
 }
-
-.sidebar-top {
-  padding: 28px 24px 20px;
-  border-bottom: 1px solid var(--border);
-}
-.brand {
-  display: flex; align-items: center; gap: 10px;
-}
+.sidebar-top { padding: 28px 24px 20px; border-bottom: 1px solid var(--border); }
+.brand { display: flex; align-items: center; gap: 10px; }
 .brand-icon {
-  width: 36px; height: 36px;
-  background: var(--accent);
-  border-radius: 9px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
+  width: 36px; height: 36px; background: var(--accent);
+  border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px;
 }
-.brand-name {
-  font-size: 16px; font-weight: 700; letter-spacing: -0.3px;
-  color: var(--text);
-}
-.brand-sub {
-  font-size: 11px; color: var(--text2);
-  font-family: 'JetBrains Mono', monospace;
-  margin-top: 1px;
-}
-
+.brand-name { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+.brand-sub  { font-size: 11px; color: var(--text2); font-family: 'JetBrains Mono', monospace; margin-top: 1px; }
 .sidebar-section { padding: 16px 12px 8px; }
 .sidebar-label {
-  font-size: 10px; font-weight: 600;
-  color: var(--text3);
+  font-size: 10px; font-weight: 600; color: var(--text3);
   text-transform: uppercase; letter-spacing: 1.2px;
   padding: 0 12px; margin-bottom: 4px;
 }
-
 .nav-item {
   display: flex; align-items: center; gap: 10px;
-  padding: 9px 12px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: 14px; font-weight: 500;
-  color: var(--text2);
-  transition: all 0.15s;
-  text-decoration: none;
-  border: none; background: none; width: 100%; text-align: left;
+  padding: 9px 12px; border-radius: var(--radius-sm);
+  cursor: pointer; font-size: 14px; font-weight: 500;
+  color: var(--text2); transition: all 0.15s;
+  text-decoration: none; border: none; background: none;
+  width: 100%; text-align: left;
 }
-.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item:hover  { background: var(--surface2); color: var(--text); }
 .nav-item.active { background: #e8f5ee; color: var(--accent); }
 .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
 .nav-badge {
-  margin-left: auto;
-  background: var(--accent);
-  color: white;
-  font-size: 11px; font-weight: 600;
-  padding: 2px 7px; border-radius: 20px;
-  min-width: 20px; text-align: center;
+  margin-left: auto; background: var(--accent); color: white;
+  font-size: 11px; font-weight: 600; padding: 2px 7px;
+  border-radius: 20px; min-width: 20px; text-align: center;
 }
 .nav-badge.warn { background: var(--warn); }
-.nav-badge.danger { background: var(--danger); }
-
-.sidebar-bottom {
-  margin-top: auto;
-  padding: 16px 12px;
-  border-top: 1px solid var(--border);
+.sidebar-bottom { margin-top: auto; padding: 16px 12px; border-top: 1px solid var(--border); }
+.user-pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; background: var(--surface2);
+  border-radius: var(--radius-sm); margin-bottom: 8px;
 }
+.user-avatar-sm {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--accent); color: white;
+  font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.user-name-sm { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
+.logout-link { font-size: 12px; color: var(--text2); text-decoration: none; }
+.logout-link:hover { color: var(--danger); }
 .live-indicator {
   display: flex; align-items: center; gap: 8px;
-  padding: 8px 12px;
-  background: var(--surface2);
-  border-radius: var(--radius-sm);
-  font-size: 12px; color: var(--text2);
-  font-family: 'JetBrains Mono', monospace;
+  padding: 8px 12px; background: var(--surface2);
+  border-radius: var(--radius-sm); font-size: 12px;
+  color: var(--text2); font-family: 'JetBrains Mono', monospace;
 }
 .pulse-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--lime);
+  width: 7px; height: 7px; border-radius: 50%; background: var(--lime);
   animation: pulse 2.5s ease-in-out infinite;
 }
-@keyframes pulse {
-  0%,100% { opacity: 1; transform: scale(1); }
-  50%      { opacity: 0.4; transform: scale(0.8); }
-}
+@keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.4; transform:scale(.8); } }
 
-/* ── Main content ── */
+/* ── Main ── */
 .main { margin-left: 260px; flex: 1; }
-
 .topbar {
-  background: rgba(245,245,247,0.85);
-  backdrop-filter: blur(20px);
+  background: rgba(245,245,247,.85); backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
-  padding: 16px 32px;
-  position: sticky; top: 0; z-index: 20;
+  padding: 16px 32px; position: sticky; top: 0; z-index: 20;
   display: flex; align-items: center; gap: 16px;
 }
 .page-title { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; }
 .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-
-/* Date filter pills */
-.date-filters {
-  display: flex; gap: 6px;
-}
+.date-filters { display: flex; gap: 6px; }
 .date-pill {
-  padding: 6px 14px;
-  border-radius: 20px;
-  border: 1.5px solid var(--border);
-  background: var(--surface);
-  font-size: 13px; font-weight: 500;
-  color: var(--text2);
-  cursor: pointer;
-  transition: all 0.15s;
-  white-space: nowrap;
+  padding: 6px 14px; border-radius: 20px;
+  border: 1.5px solid var(--border); background: var(--surface);
+  font-size: 13px; font-weight: 500; color: var(--text2);
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
 }
 .date-pill:hover { border-color: var(--accent); color: var(--accent); }
 .date-pill.active { background: var(--accent); border-color: var(--accent); color: white; }
-
-/* Status filter */
-.status-filter {
-  display: flex; gap: 6px; margin-left: 8px;
-}
+.status-filter { display: flex; gap: 6px; margin-left: 8px; }
 .status-pill {
-  padding: 6px 12px;
-  border-radius: 20px;
-  border: 1.5px solid var(--border);
-  background: var(--surface);
-  font-size: 12px; font-weight: 600;
-  color: var(--text2);
-  cursor: pointer;
-  transition: all 0.15s;
+  padding: 6px 12px; border-radius: 20px;
+  border: 1.5px solid var(--border); background: var(--surface);
+  font-size: 12px; font-weight: 600; color: var(--text2); cursor: pointer; transition: all 0.15s;
 }
-.status-pill.active-all      { background: var(--text);    border-color: var(--text);    color: white; }
-.status-pill.active-pending  { background: var(--warn);    border-color: var(--warn);    color: white; }
-.status-pill.active-progress { background: var(--info);    border-color: var(--info);    color: white; }
-.status-pill.active-done     { background: var(--lime);    border-color: var(--lime);    color: white; }
-.status-pill.active-updated  { background: var(--purple);  border-color: var(--purple);  color: white; }
+.status-pill.active-all      { background: var(--text);   border-color: var(--text);   color: white; }
+.status-pill.active-pending  { background: var(--warn);   border-color: var(--warn);   color: white; }
+.status-pill.active-progress { background: var(--info);   border-color: var(--info);   color: white; }
+.status-pill.active-done     { background: var(--lime);   border-color: var(--lime);   color: white; }
+.status-pill.active-updated  { background: var(--purple); border-color: var(--purple); color: white; }
 
-/* ── Stats row ── */
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-  padding: 24px 32px 0;
-}
+/* ── Stats ── */
+.stats-row { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; padding: 24px 32px 0; }
 .stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px 20px;
-  box-shadow: var(--shadow);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 20px; box-shadow: var(--shadow);
 }
 .stat-label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.8px; }
-.stat-value { font-size: 30px; font-weight: 700; letter-spacing: -1px; margin-top: 4px; color: var(--text); }
+.stat-value { font-size: 30px; font-weight: 700; letter-spacing: -1px; margin-top: 4px; }
 .stat-value.green  { color: var(--lime); }
 .stat-value.orange { color: var(--warn); }
 .stat-value.blue   { color: var(--info); }
 .stat-value.purple { color: var(--purple); }
 
-/* ── Orders table area ── */
+/* ── Orders ── */
 .orders-area { padding: 20px 32px 40px; }
+.date-group-header { display: flex; align-items: center; gap: 12px; margin: 24px 0 10px; }
+.date-group-label  { font-size: 14px; font-weight: 700; letter-spacing: -0.2px; }
+.date-group-line   { flex: 1; height: 1px; background: var(--border); }
+.date-group-count  { font-size: 12px; color: var(--text2); font-family: 'JetBrains Mono', monospace; }
 
-.section-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 12px;
-}
-.section-title {
-  font-size: 13px; font-weight: 600;
-  color: var(--text2);
-  text-transform: uppercase; letter-spacing: 0.8px;
-}
-
-/* Date group header */
-.date-group-header {
-  display: flex; align-items: center; gap: 12px;
-  margin: 24px 0 10px;
-}
-.date-group-label {
-  font-size: 14px; font-weight: 700;
-  color: var(--text);
-  letter-spacing: -0.2px;
-}
-.date-group-line { flex: 1; height: 1px; background: var(--border); }
-.date-group-count {
-  font-size: 12px; color: var(--text2);
-  font-family: 'JetBrains Mono', monospace;
-}
-
-/* Order card */
 .order-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px 24px;
-  box-shadow: var(--shadow);
-  margin-bottom: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 24px;
+  box-shadow: var(--shadow); margin-bottom: 10px;
   transition: box-shadow 0.2s, border-color 0.2s;
-  position: relative;
-  overflow: hidden;
+  position: relative; overflow: hidden;
 }
 .order-card:hover { box-shadow: var(--shadow2); border-color: var(--border2); }
-
-/* Left accent stripe */
 .order-card::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 4px;
-  background: var(--border2);
-  border-radius: 16px 0 0 16px;
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: var(--border2); border-radius: 16px 0 0 16px;
 }
-.order-card.status-pending::before    { background: var(--warn); }
-.order-card.status-assigned::before   { background: var(--info); }
-.order-card.status-in_progress::before{ background: var(--info); }
-.order-card.status-completed::before  { background: var(--lime); }
-.order-card.status-partial::before    { background: var(--warn); }
-.order-card.has-update::before        { background: var(--purple); }
+.order-card.status-pending::before     { background: var(--warn); }
+.order-card.status-assigned::before    { background: var(--info); }
+.order-card.status-in_progress::before { background: var(--info); }
+.order-card.status-completed::before   { background: var(--lime); }
+.order-card.status-partial::before     { background: var(--warn); }
+.order-card.has-update::before         { background: var(--purple); }
 
-/* UPDATE BANNER */
 .update-banner {
-  display: none;
-  background: linear-gradient(135deg, #f3e8ff, #ede0ff);
-  border: 1px solid #c4a0f5;
-  border-radius: 10px;
-  padding: 12px 16px;
-  margin-bottom: 14px;
-  font-size: 13px;
-  color: #5b21b6;
+  display: none; background: linear-gradient(135deg,#f3e8ff,#ede0ff);
+  border: 1px solid #c4a0f5; border-radius: 10px;
+  padding: 12px 16px; margin-bottom: 14px; font-size: 13px; color: #5b21b6;
 }
 .update-banner.show { display: block; }
-.update-banner strong { font-weight: 700; }
 .update-actions { display: flex; gap: 8px; margin-top: 8px; }
 .btn-accept-update {
-  padding: 6px 14px; border-radius: 8px;
-  background: var(--purple); border: none; color: white;
-  font-size: 12px; font-weight: 600; cursor: pointer;
+  padding: 6px 14px; border-radius: 8px; background: var(--purple);
+  border: none; color: white; font-size: 12px; font-weight: 600; cursor: pointer;
   font-family: 'Outfit', sans-serif;
 }
 .btn-dismiss-update {
-  padding: 6px 14px; border-radius: 8px;
-  background: transparent; border: 1.5px solid #c4a0f5; color: #5b21b6;
-  font-size: 12px; font-weight: 600; cursor: pointer;
-  font-family: 'Outfit', sans-serif;
+  padding: 6px 14px; border-radius: 8px; background: transparent;
+  border: 1.5px solid #c4a0f5; color: #5b21b6;
+  font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif;
 }
-
 .order-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .order-left { flex: 1; }
-
-.order-id {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px; font-weight: 500;
-  color: var(--text2);
-  margin-bottom: 3px;
-}
-.order-customer {
-  font-size: 17px; font-weight: 700;
-  letter-spacing: -0.3px;
-  color: var(--text);
-}
-.order-meta {
-  display: flex; gap: 16px; flex-wrap: wrap;
-  margin-top: 6px;
-  font-size: 13px; color: var(--text2);
-}
+.order-id { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 3px; }
+.order-customer { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+.order-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 6px; font-size: 13px; color: var(--text2); }
 .order-meta span { display: flex; align-items: center; gap: 4px; }
-
-/* Status badge */
 .badge {
   display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 12px; font-weight: 600;
-  letter-spacing: 0.2px;
-  white-space: nowrap;
+  padding: 5px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.2px; white-space: nowrap;
 }
-.badge-pending    { background: #fff3e0; color: #e65100; }
-.badge-assigned   { background: #e3f2fd; color: #0277bd; }
-.badge-in_progress{ background: #e3f2fd; color: #0277bd; }
-.badge-completed  { background: #e8f5e9; color: #2e7d32; }
-.badge-partial    { background: #fff3e0; color: #e65100; }
-.badge-updated    { background: #f3e8ff; color: #6b21a8; }
-
-/* Line chips */
+.badge-pending     { background: #fff3e0; color: #e65100; }
+.badge-assigned    { background: #e3f2fd; color: #0277bd; }
+.badge-in_progress { background: #e3f2fd; color: #0277bd; }
+.badge-completed   { background: #e8f5e9; color: #2e7d32; }
+.badge-partial     { background: #fff3e0; color: #e65100; }
+.badge-updated     { background: #f3e8ff; color: #6b21a8; }
 .line-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
 .chip {
   display: flex; align-items: center; gap: 6px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 5px 10px;
-  font-size: 12px; color: var(--text2);
-  transition: border-color 0.15s;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 5px 10px; font-size: 12px; color: var(--text2);
 }
 .chip .chip-qty { font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; }
 .chip .chip-lot { color: var(--info); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
-
-/* Action row */
 .order-actions { display: flex; align-items: center; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
-
 .btn {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 9px 18px;
-  border-radius: var(--radius-sm);
-  border: none;
-  font-family: 'Outfit', sans-serif;
-  font-size: 13px; font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-  text-decoration: none;
+  padding: 9px 18px; border-radius: var(--radius-sm); border: none;
+  font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s; text-decoration: none;
 }
 .btn-primary { background: var(--accent); color: white; }
 .btn-primary:hover { background: var(--accent2); }
@@ -362,68 +231,135 @@ body {
 .btn-outline:hover { border-color: var(--text2); color: var(--text); }
 .btn-ghost { background: transparent; color: var(--text2); padding: 9px 12px; }
 .btn-ghost:hover { color: var(--text); }
-
+.btn-reopen {
+  background: #f3e8ff; color: #6b21a8;
+  border: 1.5px solid #c4a0f5; font-size: 12px; padding: 7px 14px;
+}
+.btn-reopen:hover { background: #ede0ff; }
 select.picker-select {
-  background: var(--surface2);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--text);
-  padding: 8px 12px;
-  font-family: 'Outfit', sans-serif;
-  font-size: 13px; font-weight: 500;
-  cursor: pointer;
-  appearance: none;
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text);
+  padding: 8px 12px; font-family: 'Outfit', sans-serif;
+  font-size: 13px; font-weight: 500; cursor: pointer; appearance: none;
   padding-right: 28px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236e6e7a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
+  background-repeat: no-repeat; background-position: right 10px center;
 }
 select:focus { outline: none; border-color: var(--accent); }
-
-.picker-assigned-tag {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 13px; color: var(--text2);
-}
-.picker-assigned-tag .avatar {
+.picker-assigned-tag { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text2); }
+.avatar {
   width: 24px; height: 24px; border-radius: 50%;
-  background: var(--accent);
-  color: white; font-size: 11px; font-weight: 700;
+  background: var(--accent); color: white;
+  font-size: 11px; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
 }
-
-.empty-state {
-  text-align: center;
-  padding: 80px 40px;
-  color: var(--text2);
-}
-.empty-icon { font-size: 56px; margin-bottom: 16px; opacity: 0.4; }
+.empty-state { text-align: center; padding: 80px 40px; color: var(--text2); }
+.empty-icon  { font-size: 56px; margin-bottom: 16px; opacity: .4; }
 .empty-title { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
-.empty-sub { font-size: 14px; }
-
-/* Toast */
+.empty-sub   { font-size: 14px; }
 .toast {
   position: fixed; bottom: 28px; right: 28px;
-  background: var(--text);
-  color: white;
-  border-radius: 12px;
-  padding: 12px 20px;
-  font-size: 14px; font-weight: 500;
-  box-shadow: var(--shadow2);
-  transform: translateY(80px);
-  opacity: 0;
-  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
-  z-index: 999;
-  max-width: 320px;
+  background: var(--text); color: white;
+  border-radius: 12px; padding: 12px 20px;
+  font-size: 14px; font-weight: 500; box-shadow: var(--shadow2);
+  transform: translateY(80px); opacity: 0;
+  transition: all 0.3s cubic-bezier(.34,1.56,.64,1);
+  z-index: 999; max-width: 320px;
 }
 .toast.show { transform: translateY(0); opacity: 1; }
 
-/* Reopen btn */
-.btn-reopen {
-  background: #f3e8ff; color: #6b21a8;
-  border: 1.5px solid #c4a0f5;
-  font-size: 12px; padding: 7px 14px;
+/* ── Admin drawer ── */
+.admin-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.25); z-index: 40;
+  backdrop-filter: blur(2px);
 }
-.btn-reopen:hover { background: #ede0ff; }
+.admin-overlay.show { display: block; }
+.admin-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; width: 340px;
+  background: var(--surface); border-left: 1px solid var(--border);
+  z-index: 50; transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.admin-drawer.open { transform: translateX(0); }
+.admin-head {
+  padding: 20px 20px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.admin-head-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+.admin-close {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--surface2); border: none; cursor: pointer;
+  font-size: 14px; color: var(--text2);
+  display: flex; align-items: center; justify-content: center;
+}
+.admin-body { flex: 1; overflow-y: auto; padding: 12px 16px 24px; }
+.admin-section { margin-bottom: 20px; }
+.admin-section-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 4px; margin-bottom: 8px;
+}
+.admin-section-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--text2);
+}
+.admin-add-btn {
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  background: none; border: none; cursor: pointer; padding: 4px 8px;
+  border-radius: 6px;
+}
+.admin-add-btn:hover { background: #e8f5ee; }
+.user-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 10px;
+  background: var(--surface2); margin-bottom: 6px;
+}
+.user-av {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--accent); color: white;
+  font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.user-av.mgr { background: var(--info); }
+.user-info-block { flex: 1; min-width: 0; }
+.user-display-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.user-display-email { font-size: 11px; color: var(--text2); }
+.user-btns { display: flex; gap: 4px; }
+.icon-btn {
+  width: 28px; height: 28px; border-radius: 7px;
+  border: none; background: none; cursor: pointer;
+  font-size: 13px; display: flex; align-items: center; justify-content: center;
+  color: var(--text2); transition: all 0.12s;
+}
+.icon-btn:hover { background: var(--border); color: var(--text); }
+.icon-btn.del:hover { background: #fff2f2; color: var(--danger); }
+.inline-form {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 14px 14px 10px;
+  margin-bottom: 8px;
+}
+.inline-form input {
+  width: 100%; padding: 9px 12px;
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: 9px; color: var(--text);
+  font-family: 'Outfit', sans-serif; font-size: 14px;
+  margin-bottom: 8px; transition: border-color 0.15s;
+}
+.inline-form input:focus { outline: none; border-color: var(--accent); background: white; }
+.inline-form-hint { font-size: 11px; color: var(--text3); margin-bottom: 8px; }
+.inline-form-btns { display: flex; gap: 8px; }
+.form-save {
+  flex: 1; padding: 9px; border-radius: 9px;
+  background: var(--accent); border: none; color: white;
+  font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.form-cancel {
+  padding: 9px 14px; border-radius: 9px;
+  background: transparent; border: 1.5px solid var(--border); color: var(--text2);
+  font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.admin-empty { font-size: 13px; color: var(--text3); padding: 8px 4px; }
 
 @media (max-width: 900px) {
   .sidebar { display: none; }
@@ -431,14 +367,14 @@ select:focus { outline: none; border-color: var(--accent); }
   .stats-row { grid-template-columns: repeat(2,1fr); }
   .topbar { padding: 14px 16px; flex-wrap: wrap; }
   .orders-area { padding: 16px 16px 40px; }
+  .admin-drawer { width: 100%; }
 }
 </style>
 </head>
 <body>
-
 <div class="layout">
 
-<!-- ── Sidebar ── -->
+<!-- Sidebar -->
 <aside class="sidebar">
   <div class="sidebar-top">
     <div class="brand">
@@ -455,15 +391,13 @@ select:focus { outline: none; border-color: var(--accent); }
     <a class="nav-item active" href="/">
       <span class="nav-icon">📦</span>
       Picking Lists
-      {% set pending_count = orders | selectattr('status','eq','pending') | list | length %}
-      {% if pending_count > 0 %}
-      <span class="nav-badge">{{ pending_count }}</span>
-      {% endif %}
+      {% set pc = orders | selectattr('status','eq','pending') | list | length %}
+      {% if pc > 0 %}<span class="nav-badge">{{ pc }}</span>{% endif %}
     </a>
-    <a class="nav-item" href="/api/orders" target="_blank">
-      <span class="nav-icon">🔗</span>
-      API
-    </a>
+    <button class="nav-item" onclick="openAdmin()">
+      <span class="nav-icon">👥</span>
+      Team
+    </button>
   </div>
 
   <div class="sidebar-section">
@@ -487,6 +421,11 @@ select:focus { outline: none; border-color: var(--accent); }
   </div>
 
   <div class="sidebar-bottom">
+    <div class="user-pill">
+      <div class="user-avatar-sm">{{ user_name[0] if user_name else 'M' }}</div>
+      <span class="user-name-sm">{{ user_name or 'Manager' }}</span>
+      <a class="logout-link" href="/logout">Sign out</a>
+    </div>
     <div class="live-indicator">
       <div class="pulse-dot"></div>
       Polling inbox
@@ -494,14 +433,11 @@ select:focus { outline: none; border-color: var(--accent); }
   </div>
 </aside>
 
-<!-- ── Main ── -->
+<!-- Main -->
 <div class="main">
-
   <div class="topbar">
     <div class="page-title">Picking Lists</div>
     <div class="topbar-right">
-
-      <!-- Date filter pills -->
       <div class="date-filters" id="date-filters">
         <button class="date-pill active" data-date="all" onclick="filterDate('all',this)">All dates</button>
         {% set dates_seen = [] %}
@@ -515,70 +451,47 @@ select:focus { outline: none; border-color: var(--accent); }
           {% endif %}
         {% endfor %}
       </div>
-
-      <!-- Status filter -->
       <div class="status-filter">
-        <button class="status-pill active-all" data-status="all" onclick="filterStatus('all',this)">All</button>
-        <button class="status-pill" data-status="pending"     onclick="filterStatus('pending',this)">Pending</button>
-        <button class="status-pill" data-status="in_progress" onclick="filterStatus('in_progress',this)">Active</button>
-        <button class="status-pill" data-status="completed"   onclick="filterStatus('completed',this)">Done</button>
+        <button class="status-pill active-all"   data-status="all"         onclick="filterStatus('all',this)">All</button>
+        <button class="status-pill"              data-status="pending"     onclick="filterStatus('pending',this)">Pending</button>
+        <button class="status-pill"              data-status="in_progress" onclick="filterStatus('in_progress',this)">Active</button>
+        <button class="status-pill"              data-status="completed"   onclick="filterStatus('completed',this)">Done</button>
       </div>
-
     </div>
   </div>
 
   <!-- Stats -->
   <div class="stats-row">
     {% set total     = orders | length %}
-    {% set pending   = orders | selectattr('status','eq','pending')     | list | length %}
+    {% set pending   = orders | selectattr('status','eq','pending') | list | length %}
     {% set active    = orders | selectattr('status','in',['assigned','in_progress']) | list | length %}
     {% set completed = orders | selectattr('status','in',['completed','partial']) | list | length %}
-    {% set updated   = orders | selectattr('has_update', 'defined') | selectattr('has_update','equalto',true) | list | length %}
-    <div class="stat-card">
-      <div class="stat-label">Total Orders</div>
-      <div class="stat-value">{{ total }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Pending</div>
-      <div class="stat-value orange">{{ pending }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">In Progress</div>
-      <div class="stat-value blue">{{ active }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Completed</div>
-      <div class="stat-value green">{{ completed }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Updates</div>
-      <div class="stat-value purple">{{ updated }}</div>
-    </div>
+    {% set updated   = orders | selectattr('has_update','defined') | selectattr('has_update','equalto',true) | list | length %}
+    <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value">{{ total }}</div></div>
+    <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value orange">{{ pending }}</div></div>
+    <div class="stat-card"><div class="stat-label">In Progress</div><div class="stat-value blue">{{ active }}</div></div>
+    <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-value green">{{ completed }}</div></div>
+    <div class="stat-card"><div class="stat-label">Updates</div><div class="stat-value purple">{{ updated }}</div></div>
   </div>
 
-  <!-- Orders list -->
+  <!-- Orders -->
   <div class="orders-area">
-
     {% if not orders %}
     <div class="empty-state">
       <div class="empty-icon">📭</div>
       <div class="empty-title">No orders yet</div>
       <div class="empty-sub">Waiting for XML emails at pickinglists@gaiaherbs.nl</div>
     </div>
-
     {% else %}
-
     {% set ns = namespace(cur_date='') %}
     {% for order in orders | sort(attribute='departure_date') %}
-
       {% if order.departure_date != ns.cur_date %}
         {% set ns.cur_date = order.departure_date %}
         <div class="date-group-header" data-date-header="{{ order.departure_date }}">
           <div class="date-group-label">
-            {% if order.departure_date == today %} 📅 Today — {{ order.departure_date }}
-            {% elif order.departure_date == tomorrow %} 📅 Tomorrow — {{ order.departure_date }}
-            {% else %} 📅 {{ order.departure_date }}
-            {% endif %}
+            {% if order.departure_date == today %}📅 Today — {{ order.departure_date }}
+            {% elif order.departure_date == tomorrow %}📅 Tomorrow — {{ order.departure_date }}
+            {% else %}📅 {{ order.departure_date }}{% endif %}
           </div>
           <div class="date-group-line"></div>
           <div class="date-group-count">
@@ -592,19 +505,12 @@ select:focus { outline: none; border-color: var(--accent); }
            data-date="{{ order.departure_date }}"
            data-status="{{ order.status }}">
 
-        <!-- Update banner -->
         {% if order.has_update %}
-        <div class="update-banner show" id="update-banner-{{ order.order_id }}">
-          <strong>⚡ Order updated</strong> — This order was re-sent with changes.<br>
-          <span style="font-size:12px">
-            {% if order.update_diff %}
-              {{ order.update_diff }}
-            {% else %}
-              New version received. Review and confirm changes.
-            {% endif %}
-          </span>
+        <div class="update-banner show">
+          <strong>⚡ Order updated</strong> — Re-sent with changes.<br>
+          <span style="font-size:12px">{{ order.update_diff or 'New version received.' }}</span>
           <div class="update-actions">
-            <button class="btn-accept-update" onclick="acceptUpdate('{{ order.order_id }}')">✓ Accept changes</button>
+            <button class="btn-accept-update"  onclick="acceptUpdate('{{ order.order_id }}')">✓ Accept changes</button>
             <button class="btn-dismiss-update" onclick="dismissUpdate('{{ order.order_id }}')">Keep original</button>
           </div>
         </div>
@@ -623,7 +529,6 @@ select:focus { outline: none; border-color: var(--accent); }
               <span>📋 {{ order.lines|length }} items</span>
             </div>
           </div>
-
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
             <span class="badge badge-{{ 'updated' if order.has_update else order.status }}">
               {% if order.has_update %}⚡ Updated
@@ -644,7 +549,7 @@ select:focus { outline: none; border-color: var(--accent); }
         <!-- Line chips -->
         <div class="line-chips">
           {% for line in order.lines %}
-          <div class="chip {% if line.status=='picked' %}style="border-color:#c8e6c9"{% endif %}">
+          <div class="chip">
             <span class="chip-qty">{{ line.qty }}×</span>
             <span>{{ line.product }}</span>
             {% if line.lot %}<span class="chip-lot">{{ line.lot }}</span>{% endif %}
@@ -659,14 +564,18 @@ select:focus { outline: none; border-color: var(--accent); }
         <!-- Actions -->
         <div class="order-actions">
           {% if order.status == 'pending' %}
+            {% if pickers %}
             <select class="picker-select" id="picker-{{ order.order_id }}">
               {% for p in pickers %}
-              <option value="{{ loop.index0 }}">{{ p.name }}</option>
+              <option value="{{ p.id }}">{{ p.name }}</option>
               {% endfor %}
             </select>
             <button class="btn btn-primary" onclick="assignOrder('{{ order.order_id }}')">
-              Send to Picker →
+              Assign →
             </button>
+            {% else %}
+            <span style="font-size:13px;color:var(--text2)">No pickers — add them in <button onclick="openAdmin()" style="background:none;border:none;color:var(--accent);font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px">Team</button></span>
+            {% endif %}
 
           {% elif order.status in ['assigned','in_progress'] %}
             <div class="picker-assigned-tag">
@@ -685,54 +594,56 @@ select:focus { outline: none; border-color: var(--accent); }
             <button class="btn btn-reopen" onclick="reopenOrder('{{ order.order_id }}')">↩ Reopen</button>
           {% endif %}
         </div>
-
       </div>
     {% endfor %}
     {% endif %}
-
   </div>
 </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<!-- Admin drawer -->
+<div class="admin-overlay" id="admin-overlay" onclick="closeAdmin()"></div>
+<div class="admin-drawer" id="admin-drawer">
+  <div class="admin-head">
+    <div class="admin-head-title">👥 Team</div>
+    <button class="admin-close" onclick="closeAdmin()">✕</button>
+  </div>
+  <div class="admin-body" id="admin-body">
+    <div style="color:var(--text2);font-size:13px;padding:16px 4px">Loading…</div>
+  </div>
+</div>
+
 <script>
 let activeDateFilter   = 'all';
 let activeStatusFilter = 'all';
 
 function applyFilters() {
-  // Order cards
   document.querySelectorAll('.order-card').forEach(card => {
-    const dateMatch   = activeDateFilter   === 'all' || card.dataset.date   === activeDateFilter;
-    const statusMatch = activeStatusFilter === 'all' || card.dataset.status === activeStatusFilter
-                     || (activeStatusFilter === 'in_progress' && card.dataset.status === 'assigned');
-    card.style.display = (dateMatch && statusMatch) ? '' : 'none';
+    const dateOk   = activeDateFilter   === 'all' || card.dataset.date   === activeDateFilter;
+    const statusOk = activeStatusFilter === 'all' || card.dataset.status === activeStatusFilter
+                  || (activeStatusFilter === 'in_progress' && card.dataset.status === 'assigned');
+    card.style.display = (dateOk && statusOk) ? '' : 'none';
   });
-  // Date group headers — hide if no visible cards underneath
-  document.querySelectorAll('[data-date-header]').forEach(header => {
-    const date = header.dataset.dateHeader;
-    const hasVisible = [...document.querySelectorAll(`.order-card[data-date="${date}"]`)]
-      .some(c => c.style.display !== 'none');
-    header.style.display = hasVisible ? '' : 'none';
+  document.querySelectorAll('[data-date-header]').forEach(h => {
+    const d   = h.dataset.dateHeader;
+    const vis = [...document.querySelectorAll(`.order-card[data-date="${d}"]`)].some(c => c.style.display !== 'none');
+    h.style.display = vis ? '' : 'none';
   });
 }
-
 function filterDate(date, btn) {
   activeDateFilter = date;
   document.querySelectorAll('.date-pill').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   applyFilters();
 }
-
 function filterStatus(status, btn) {
   activeStatusFilter = status;
-  document.querySelectorAll('.status-pill').forEach(b => {
-    b.className = 'status-pill';
-  });
+  document.querySelectorAll('.status-pill').forEach(b => { b.className = 'status-pill'; });
   btn.classList.add('active-' + (status === 'in_progress' ? 'progress' : status));
   applyFilters();
 }
-
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -745,39 +656,166 @@ async function assignOrder(orderId) {
   const res = await fetch('/assign/' + orderId, {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({picker_idx: parseInt(sel.value)})
+    body: JSON.stringify({picker_id: parseInt(sel.value)})
   });
   const data = await res.json();
-  if (data.wa_url) {
-    window.open(data.wa_url, '_blank');
-    showToast('📲 WhatsApp opened — forward the link to the picker');
+  if (data.pick_url) {
+    navigator.clipboard.writeText(data.pick_url).catch(() => {});
+    showToast(`Assigned to ${data.picker_name} — link copied`);
+    setTimeout(() => location.reload(), 1000);
   } else {
-    prompt('Copy this link and send to the picker:', data.pick_url);
+    showToast('Error: ' + (data.error || 'unknown'));
   }
-  setTimeout(() => location.reload(), 1200);
 }
-
 function copyLink(orderId) {
-  const url = window.location.origin + '/pick/' + orderId;
-  navigator.clipboard.writeText(url).then(() => showToast('Link copied to clipboard'));
+  navigator.clipboard.writeText(window.location.origin + '/pick/' + orderId)
+    .then(() => showToast('Link copied to clipboard'));
 }
-
 async function reopenOrder(orderId) {
   await fetch('/reopen/' + orderId, {method:'POST'});
   showToast('Order reopened');
   setTimeout(() => location.reload(), 800);
 }
-
 async function acceptUpdate(orderId) {
   await fetch('/accept_update/' + orderId, {method:'POST'});
   showToast('✅ Changes accepted');
   setTimeout(() => location.reload(), 800);
 }
-
 async function dismissUpdate(orderId) {
   await fetch('/dismiss_update/' + orderId, {method:'POST'});
-  showToast('Update dismissed — original kept');
+  showToast('Update dismissed');
   setTimeout(() => location.reload(), 800);
+}
+
+// ── Admin drawer ──────────────────────────────────────────────────────────────
+async function openAdmin() {
+  document.getElementById('admin-overlay').classList.add('show');
+  document.getElementById('admin-drawer').classList.add('open');
+  await loadAdminUsers();
+}
+function closeAdmin() {
+  document.getElementById('admin-overlay').classList.remove('show');
+  document.getElementById('admin-drawer').classList.remove('open');
+}
+async function loadAdminUsers() {
+  const res   = await fetch('/admin/users');
+  const users = await res.json();
+  renderAdminUsers(users);
+}
+function renderAdminUsers(users) {
+  const pickers  = users.filter(u => u.role === 'picker');
+  const managers = users.filter(u => u.role === 'manager');
+  document.getElementById('admin-body').innerHTML = `
+    <div class="admin-section">
+      <div class="admin-section-head">
+        <span class="admin-section-label">Pickers</span>
+        <button class="admin-add-btn" onclick="showAddForm('picker')">+ Add picker</button>
+      </div>
+      <div id="add-picker-form"></div>
+      ${pickers.length === 0 ? '<div class="admin-empty">No pickers yet</div>' : ''}
+      ${pickers.map(u => renderUserRow(u)).join('')}
+    </div>
+    <div class="admin-section">
+      <div class="admin-section-head">
+        <span class="admin-section-label">Managers</span>
+        <button class="admin-add-btn" onclick="showAddForm('manager')">+ Add manager</button>
+      </div>
+      <div id="add-manager-form"></div>
+      ${managers.map(u => renderUserRow(u)).join('')}
+    </div>
+  `;
+}
+function renderUserRow(u) {
+  const av = `<div class="user-av ${u.role==='manager'?'mgr':''}">${u.name[0].toUpperCase()}</div>`;
+  const info = `<div class="user-info-block">
+    <div class="user-display-name">${esc(u.name)}</div>
+    ${u.email ? `<div class="user-display-email">${esc(u.email)}</div>` : '<div class="user-display-email">PIN login</div>'}
+  </div>`;
+  const btns = `<div class="user-btns">
+    <button class="icon-btn" title="Edit" onclick='editUser(${u.id},"${u.role}","${esc(u.name)}","${esc(u.email||"")}")'>✏️</button>
+    <button class="icon-btn del" title="Delete" onclick="deleteUser(${u.id},'${esc(u.name)}')">🗑</button>
+  </div>`;
+  return `<div class="user-row" id="urow-${u.id}">${av}${info}${btns}</div><div id="uedit-${u.id}"></div>`;
+}
+function showAddForm(role) {
+  const el = document.getElementById(`add-${role}-form`);
+  const isPicker = role === 'picker';
+  el.innerHTML = `<div class="inline-form">
+    <input id="af-name" placeholder="Full name" autocomplete="off">
+    ${isPicker
+      ? `<input id="af-pin" placeholder="4-digit PIN" inputmode="numeric" maxlength="4" autocomplete="off">`
+      : `<input id="af-email" placeholder="Email address" type="email" autocomplete="off">
+         <input id="af-pass" placeholder="Password" type="password" autocomplete="off">`
+    }
+    <div class="inline-form-btns">
+      <button class="form-save" onclick="submitAddForm('${role}')">Add ${role}</button>
+      <button class="form-cancel" onclick="document.getElementById('add-${role}-form').innerHTML=''">Cancel</button>
+    </div>
+  </div>`;
+  document.getElementById('af-name').focus();
+}
+async function submitAddForm(role) {
+  const name = document.getElementById('af-name').value.trim();
+  if (!name) { alert('Name required'); return; }
+  const body = {role, name};
+  if (role === 'picker') {
+    const pin = document.getElementById('af-pin').value.trim();
+    if (pin.length < 4) { alert('PIN must be 4 digits'); return; }
+    body.pin = pin;
+  } else {
+    body.email    = document.getElementById('af-email').value.trim();
+    body.password = document.getElementById('af-pass').value;
+    if (!body.email || !body.password) { alert('Email and password required'); return; }
+  }
+  const res = await fetch('/admin/users', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+  const data = await res.json();
+  if (data.error) { alert(data.error); return; }
+  showToast(`${name} added`);
+  await loadAdminUsers();
+}
+function editUser(id, role, name, email) {
+  document.getElementById(`urow-${id}`).style.opacity = '0.4';
+  const isPicker = role === 'picker';
+  document.getElementById(`uedit-${id}`).innerHTML = `<div class="inline-form">
+    <input id="eu-name-${id}" value="${esc(name)}" placeholder="Name" autocomplete="off">
+    ${isPicker
+      ? `<input id="eu-secret-${id}" placeholder="New PIN (leave blank to keep)" inputmode="numeric" maxlength="4" autocomplete="off">`
+      : `<input id="eu-email-${id}" value="${esc(email)}" placeholder="Email" type="email" autocomplete="off">
+         <input id="eu-secret-${id}" placeholder="New password (leave blank to keep)" type="password" autocomplete="off">`
+    }
+    <div class="inline-form-hint">Leave PIN/password blank to keep current</div>
+    <div class="inline-form-btns">
+      <button class="form-save" onclick="submitEdit(${id},'${role}')">Save</button>
+      <button class="form-cancel" onclick="cancelEdit(${id})">Cancel</button>
+    </div>
+  </div>`;
+}
+function cancelEdit(id) {
+  document.getElementById(`urow-${id}`).style.opacity = '';
+  document.getElementById(`uedit-${id}`).innerHTML = '';
+}
+async function submitEdit(id, role) {
+  const name   = document.getElementById(`eu-name-${id}`).value.trim();
+  const secret = document.getElementById(`eu-secret-${id}`).value;
+  const email  = role === 'manager' ? document.getElementById(`eu-email-${id}`).value.trim() : null;
+  if (!name) { alert('Name required'); return; }
+  const body = {name, email, secret: secret || null, role};
+  const res = await fetch(`/admin/users/${id}`, {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+  const data = await res.json();
+  if (data.error) { alert(data.error); return; }
+  showToast('Saved');
+  await loadAdminUsers();
+}
+async function deleteUser(id, name) {
+  if (!confirm(`Delete ${name}?`)) return;
+  const res = await fetch(`/admin/users/${id}`, {method:'DELETE'});
+  const data = await res.json();
+  if (data.error) { alert(data.error); return; }
+  showToast(`${name} removed`);
+  await loadAdminUsers();
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;');
 }
 
 // Auto-refresh every 45s

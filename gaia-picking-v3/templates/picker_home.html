@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gaia Pick">
+<link rel="manifest" href="/static/manifest.json">
+<title>My Picks — Gaia Herbs</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #f2f2f7;
+  --surface: #ffffff;
+  --border:  #e0e0e5;
+  --text:    #1c1c1e;
+  --text2:   #6c6c70;
+  --text3:   #aeaeb2;
+  --accent:  #1a7a4a;
+  --lime:    #34c759;
+  --warn:    #ff9500;
+  --info:    #007aff;
+  --sep:     rgba(60,60,67,0.12);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.header {
+  background: rgba(242,242,247,0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--sep);
+  padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 10;
+}
+.header-brand { display: flex; align-items: center; gap: 10px; }
+.brand-icon {
+  width: 34px; height: 34px;
+  background: var(--accent);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.brand-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.logout-link {
+  font-size: 13px; font-weight: 500;
+  color: var(--text2);
+  text-decoration: none;
+  padding: 7px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  transition: all 0.15s;
+}
+.logout-link:hover { border-color: var(--text2); color: var(--text); }
+
+.greeting {
+  padding: 28px 20px 16px;
+  font-size: 24px; font-weight: 800;
+  letter-spacing: -0.6px;
+  color: var(--text);
+}
+
+.order-list { padding: 0 16px 40px; }
+
+.order-card {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin-bottom: 10px;
+  text-decoration: none;
+  color: var(--text);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s;
+}
+.order-card:active { opacity: 0.85; }
+.order-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0; width: 4px;
+  background: var(--info);
+  border-radius: 16px 0 0 16px;
+}
+.order-card.status-assigned::before    { background: var(--info); }
+.order-card.status-in_progress::before { background: var(--accent); }
+.order-card.status-completed::before   { background: var(--lime); }
+.order-card.status-partial::before     { background: var(--warn); }
+
+.order-customer { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+.order-meta {
+  font-size: 13px; color: var(--text2);
+  margin-top: 5px; display: flex; flex-wrap: wrap; gap: 12px;
+}
+.order-open-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 14px;
+}
+.open-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--accent);
+  color: white;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-size: 14px; font-weight: 700;
+}
+.progress-mini {
+  height: 4px; background: var(--border);
+  border-radius: 2px; overflow: hidden;
+  flex: 1; max-width: 100px;
+}
+.progress-mini-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--lime));
+  border-radius: 2px;
+}
+
+.empty {
+  text-align: center;
+  padding: 80px 24px;
+}
+.empty-icon { font-size: 56px; opacity: 0.3; margin-bottom: 16px; }
+.empty-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.empty-sub { font-size: 14px; color: var(--text2); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-brand">
+    <div class="brand-icon">🌿</div>
+    <div class="brand-name">Gaia Herbs</div>
+  </div>
+  <a class="logout-link" href="/logout">Sign Out</a>
+</div>
+
+<div class="greeting">Hi {{ user_name }}! 👋</div>
+
+<div class="order-list">
+{% if orders %}
+  {% for order in orders %}
+  {% set done = order.lines | selectattr('status', 'ne', 'pending') | list | length %}
+  {% set total = order.lines | length %}
+  <a class="order-card status-{{ order.status }}" href="/pick/{{ order.order_id }}">
+    <div class="order-customer">{{ order.customer or 'Picking List' }}</div>
+    <div class="order-meta">
+      <span>📅 {{ order.departure_date }}</span>
+      <span>📋 {{ total }} items</span>
+      {% if order.carrier %}<span>🚛 {{ order.carrier }}</span>{% endif %}
+    </div>
+    <div class="order-open-row">
+      <div class="progress-mini">
+        <div class="progress-mini-fill" style="width:{{ (done / total * 100)|int if total else 0 }}%"></div>
+      </div>
+      <div class="open-badge">
+        {% if order.status in ['completed','partial'] %}✓ View{% else %}Open →{% endif %}
+      </div>
+    </div>
+  </a>
+  {% endfor %}
+{% else %}
+  <div class="empty">
+    <div class="empty-icon">📭</div>
+    <div class="empty-title">No orders assigned</div>
+    <div class="empty-sub">Your manager will send you a picking list</div>
+  </div>
+{% endif %}
+</div>
+
+</body>
+</html>

@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gaia Pick">
+<link rel="manifest" href="/static/manifest.json">
 <title>Pick #{{ order.order_id }}</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -25,378 +29,122 @@
 html { font-size: 16px; }
 body {
   font-family: 'Outfit', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  padding-bottom: 160px;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; padding-bottom: 160px;
   -webkit-font-smoothing: antialiased;
 }
 
 /* ── Header ── */
 .header {
-  background: rgba(242,242,247,0.92);
-  backdrop-filter: blur(20px);
+  background: rgba(242,242,247,0.92); backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--sep);
-  position: sticky; top: 0; z-index: 20;
-  padding: 14px 20px 12px;
+  position: sticky; top: 0; z-index: 20; padding: 14px 20px 12px;
 }
 .header-top { display: flex; align-items: center; justify-content: space-between; }
-.header-order {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px; color: var(--text2); font-weight: 500;
-  text-transform: uppercase; letter-spacing: 0.5px;
-}
-.header-customer {
-  font-size: 20px; font-weight: 700;
-  letter-spacing: -0.5px; line-height: 1.2;
-  margin-top: 1px;
-}
-.progress-count {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 15px; font-weight: 500;
-  color: var(--accent);
-  white-space: nowrap;
-}
-.progress-track {
-  height: 3px;
-  background: var(--border);
-  border-radius: 2px;
-  margin-top: 10px;
-  overflow: hidden;
-}
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--lime));
-  border-radius: 2px;
-  transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1);
-}
-.progress-label {
-  font-size: 11px; color: var(--text2);
-  margin-top: 5px;
-  font-family: 'JetBrains Mono', monospace;
-}
+.header-order { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text2); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+.header-customer { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.2; margin-top: 1px; }
+.progress-count { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 500; color: var(--accent); white-space: nowrap; }
+.progress-track { height: 3px; background: var(--border); border-radius: 2px; margin-top: 10px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--lime)); border-radius: 2px; transition: width 0.4s cubic-bezier(.34,1.56,.64,1); }
+.progress-label { font-size: 11px; color: var(--text2); margin-top: 5px; font-family: 'JetBrains Mono', monospace; }
 
 /* ── Info strip ── */
-.info-strip {
-  display: flex; gap: 0;
-  background: var(--surface);
-  border-bottom: 1px solid var(--sep);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-.info-item {
-  display: flex; flex-direction: column;
-  align-items: center;
-  padding: 10px 16px;
-  border-right: 1px solid var(--sep);
-  white-space: nowrap;
-  min-width: max-content;
-}
+.info-strip { display: flex; background: var(--surface); border-bottom: 1px solid var(--sep); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.info-item { display: flex; flex-direction: column; align-items: center; padding: 10px 16px; border-right: 1px solid var(--sep); white-space: nowrap; min-width: max-content; }
 .info-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
 .info-value { font-size: 13px; font-weight: 600; color: var(--text); margin-top: 2px; }
 
 /* ── Group headers ── */
-.transit-group {
-  margin: 20px 16px 0;
-  display: flex; align-items: center; gap: 10px;
-}
-.transit-label {
-  font-size: 11px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 1px;
-  color: var(--info);
-  white-space: nowrap;
-}
+.transit-group { margin: 20px 16px 0; display: flex; align-items: center; gap: 10px; }
+.transit-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--info); white-space: nowrap; }
 .transit-line { flex: 1; height: 1px; background: var(--sep); }
+.product-group { padding: 12px 20px 4px; font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.8px; }
 
-.product-group {
-  padding: 12px 20px 4px;
-  font-size: 12px; font-weight: 600;
-  color: var(--text2);
-  text-transform: uppercase; letter-spacing: 0.8px;
-}
-
-/* ── Line items — iOS grouped list style ── */
-.lines-section {
-  margin: 8px 16px;
-  background: var(--surface);
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-}
-
-.line-item {
-  border-bottom: 1px solid var(--sep);
-  transition: background 0.12s;
-}
+/* ── Line items ── */
+.lines-section { margin: 8px 16px; background: var(--surface); border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.line-item { border-bottom: 1px solid var(--sep); transition: background 0.12s; }
 .line-item:last-child { border-bottom: none; }
-
-.line-main {
-  padding: 14px 16px;
-}
-
+.line-main { padding: 14px 16px; }
 .line-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-.line-name {
-  font-size: 15px; font-weight: 600;
-  letter-spacing: -0.2px;
-  line-height: 1.3;
-  flex: 1;
-}
+.line-name { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; line-height: 1.3; flex: 1; }
 .line-item.status-picked  .line-name { color: var(--text2); text-decoration: line-through; }
 .line-item.status-missing .line-name { color: var(--danger); }
-
-/* Status indicator dot */
-.status-dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  border: 2px solid var(--border);
-  margin-top: 4px;
-  flex-shrink: 0;
-  transition: all 0.2s;
-}
+.status-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--border); margin-top: 4px; flex-shrink: 0; transition: all 0.2s; }
 .status-picked  .status-dot { background: var(--lime);   border-color: var(--lime); }
 .status-short   .status-dot { background: var(--warn);   border-color: var(--warn); }
 .status-missing .status-dot { background: var(--danger); border-color: var(--danger); }
-
-/* Data pills row */
-.line-pills {
-  display: flex; flex-wrap: wrap; gap: 5px;
-  margin-top: 8px;
-}
-.pill {
-  display: flex; align-items: center; gap: 4px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 3px 8px;
-  font-size: 11px;
-}
+.line-pills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.pill { display: flex; align-items: center; gap: 4px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; font-size: 11px; }
 .pill-label { color: var(--text3); font-weight: 500; }
 .pill-value { color: var(--text); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
-.pill.lot   .pill-value { color: var(--info); }
-.pill.qty   .pill-value { color: var(--accent); font-size: 12px; }
-.pill.arr   .pill-value { color: var(--warn); }
+.pill.lot .pill-value { color: var(--info); }
+.pill.qty .pill-value { color: var(--accent); font-size: 12px; }
+.pill.arr .pill-value { color: var(--warn); }
 
-/* Action buttons — iOS segmented style */
-.line-actions {
-  display: flex;
-  margin: 0 16px 14px;
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-  background: var(--surface2);
-}
-.act-seg {
-  flex: 1;
-  padding: 9px 4px;
-  border: none;
-  background: transparent;
-  font-family: 'Outfit', sans-serif;
-  font-size: 12px; font-weight: 600;
-  cursor: pointer;
-  transition: all 0.12s;
-  color: var(--text2);
-  border-right: 1px solid var(--border);
-  text-align: center;
-}
+/* ── Segmented buttons ── */
+.line-actions { display: flex; margin: 0 16px 14px; border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface2); }
+.act-seg { flex: 1; padding: 10px 4px; border: none; background: transparent; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.12s; color: var(--text2); border-right: 1px solid var(--border); text-align: center; }
 .act-seg:last-child { border-right: none; }
 .act-seg:active { opacity: 0.7; }
 .act-seg.sel-picked  { background: #d4edda; color: #155724; }
 .act-seg.sel-short   { background: #fff3cd; color: #856404; }
 .act-seg.sel-missing { background: #f8d7da; color: #721c24; }
 
-/* Short qty row */
-.short-row {
-  display: none;
-  align-items: center; gap: 10px;
-  margin: 0 16px 12px;
-  padding: 10px 14px;
-  background: #fff8e1;
-  border: 1.5px solid #ffe082;
-  border-radius: 10px;
-}
+/* ── Short qty row ── */
+.short-row { display: none; align-items: center; gap: 10px; margin: 0 16px 12px; padding: 10px 14px; background: #fff8e1; border: 1.5px solid #ffe082; border-radius: 10px; }
 .short-row.show { display: flex; }
 .short-label { font-size: 13px; color: #856404; font-weight: 500; }
-.short-input {
-  width: 64px;
-  background: white;
-  border: 1.5px solid #ffe082;
-  border-radius: 8px;
-  color: var(--text);
-  padding: 6px 8px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 16px; font-weight: 600;
-  text-align: center;
-}
+.short-input { width: 64px; background: white; border: 1.5px solid #ffe082; border-radius: 8px; color: var(--text); padding: 6px 8px; font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 600; text-align: center; }
 .short-input:focus { outline: none; border-color: var(--warn); }
 .short-of { font-size: 12px; color: #856404; }
 
-/* Note row */
-.note-toggle {
-  display: flex; align-items: center; gap: 6px;
-  margin: 0 16px 12px;
-  background: none; border: none;
-  font-family: 'Outfit', sans-serif;
-  font-size: 12px; font-weight: 500;
-  color: var(--text2);
-  cursor: pointer;
-  padding: 0;
-}
-.note-area-wrap {
-  display: none;
-  margin: 0 16px 14px;
-}
+/* ── Note ── */
+.note-toggle { display: flex; align-items: center; gap: 6px; margin: 0 16px 12px; background: none; border: none; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500; color: var(--text2); cursor: pointer; padding: 0; }
+.note-area-wrap { display: none; margin: 0 16px 14px; }
 .note-area-wrap.show { display: block; }
-.note-area {
-  width: 100%;
-  background: var(--surface2);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  color: var(--text);
-  padding: 10px 12px;
-  font-family: 'Outfit', sans-serif;
-  font-size: 14px;
-  resize: none;
-  min-height: 56px;
-  line-height: 1.4;
-}
+.note-area { width: 100%; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); padding: 10px 12px; font-family: 'Outfit', sans-serif; font-size: 14px; resize: none; min-height: 56px; line-height: 1.4; }
 .note-area::placeholder { color: var(--text3); }
 .note-area:focus { outline: none; border-color: var(--accent); }
 
 /* ── Bottom bar ── */
 .bottom-bar {
   position: fixed; bottom: 0; left: 0; right: 0;
-  background: rgba(242,242,247,0.96);
-  backdrop-filter: blur(20px);
+  background: rgba(242,242,247,0.96); backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--sep);
   padding: 12px 20px max(16px, env(safe-area-inset-bottom));
   z-index: 20;
 }
-.notify-row {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 10px;
-}
+.notify-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .notify-label { font-size: 13px; color: var(--text2); font-weight: 500; }
-.notify-select {
-  flex: 1;
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  color: var(--text);
-  padding: 8px 12px;
-  font-family: 'Outfit', sans-serif;
-  font-size: 14px; font-weight: 500;
-  appearance: none;
-}
-.complete-btn {
-  width: 100%;
-  padding: 16px;
-  border-radius: 14px;
-  border: none;
-  background: var(--accent);
-  color: white;
-  font-family: 'Outfit', sans-serif;
-  font-size: 16px; font-weight: 700;
-  letter-spacing: -0.2px;
-  cursor: pointer;
-  transition: all 0.15s;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-}
+.notify-select { flex: 1; background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); padding: 8px 12px; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500; appearance: none; }
+.complete-btn { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--accent); color: white; font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: -0.2px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .complete-btn:active { transform: scale(0.98); opacity: 0.9; }
 .complete-btn.has-exceptions { background: var(--warn); }
 
 /* ── Done screen ── */
-.done-screen {
-  display: none;
-  position: fixed; inset: 0;
-  background: var(--surface);
-  z-index: 100;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 32px;
-  text-align: center;
-}
+.done-screen { display: none; position: fixed; inset: 0; background: var(--surface); z-index: 100; flex-direction: column; align-items: center; justify-content: center; padding: 48px 32px; text-align: center; }
 .done-screen.show { display: flex; }
-
-.done-icon-wrap {
-  width: 100px; height: 100px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 48px;
-  margin-bottom: 24px;
-  animation: pop 0.4s cubic-bezier(0.34,1.56,0.64,1);
-}
-.done-icon-wrap.clean    { background: #e8f5e9; }
-.done-icon-wrap.partial  { background: #fff8e1; }
-@keyframes pop {
-  0%   { transform: scale(0); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-.done-title {
-  font-size: 28px; font-weight: 800;
-  letter-spacing: -0.8px;
-  color: var(--text);
-}
-.done-sub {
-  font-size: 15px; color: var(--text2);
-  margin-top: 8px; line-height: 1.6;
-}
-.done-summary {
-  margin-top: 24px;
-  background: var(--bg);
-  border-radius: 14px;
-  padding: 16px 20px;
-  text-align: left;
-  width: 100%;
-  max-width: 360px;
-}
-.summary-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 6px 0;
-  border-bottom: 1px solid var(--sep);
-  font-size: 14px;
-}
+.done-icon-wrap { width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 48px; margin-bottom: 24px; animation: pop 0.4s cubic-bezier(.34,1.56,.64,1); }
+.done-icon-wrap.clean   { background: #e8f5e9; }
+.done-icon-wrap.partial { background: #fff8e1; }
+@keyframes pop { 0% { transform:scale(0); opacity:0; } 100% { transform:scale(1); opacity:1; } }
+.done-title { font-size: 28px; font-weight: 800; letter-spacing: -0.8px; }
+.done-sub   { font-size: 15px; color: var(--text2); margin-top: 8px; line-height: 1.6; }
+.done-summary { margin-top: 24px; background: var(--bg); border-radius: 14px; padding: 16px 20px; text-align: left; width: 100%; max-width: 360px; }
+.summary-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--sep); font-size: 14px; }
 .summary-row:last-child { border-bottom: none; }
 .summary-label { color: var(--text2); }
 .summary-value { font-weight: 700; }
-
-.wa-btn {
-  margin-top: 28px;
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 16px 32px;
-  border-radius: 14px;
-  background: #25D366;
-  color: white;
-  font-family: 'Outfit', sans-serif;
-  font-size: 16px; font-weight: 700;
-  text-decoration: none;
-  transition: opacity 0.15s;
-  width: 100%; max-width: 360px;
-  justify-content: center;
-}
-.wa-btn:active { opacity: 0.85; }
-
-.reopen-btn {
-  margin-top: 12px;
-  padding: 13px 24px;
-  border-radius: 12px;
-  border: 1.5px solid var(--border);
-  background: transparent;
-  color: var(--text2);
-  font-family: 'Outfit', sans-serif;
-  font-size: 14px; font-weight: 600;
-  cursor: pointer;
-  width: 100%; max-width: 360px;
-}
+.email-sent-banner { margin-top: 20px; display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--accent); font-weight: 600; background: #e8f5ee; padding: 12px 20px; border-radius: 12px; width: 100%; max-width: 360px; justify-content: center; }
+.reopen-btn { margin-top: 12px; padding: 13px 24px; border-radius: 12px; border: 1.5px solid var(--border); background: transparent; color: var(--text2); font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; max-width: 360px; }
 .reopen-btn:active { opacity: 0.7; }
 </style>
 </head>
 <body>
 
-<!-- ── Header ── -->
+<!-- Header -->
 <div class="header">
   <div class="header-top">
     <div>
@@ -409,41 +157,24 @@ body {
   <div class="progress-label" id="prog-label">Tap each item to confirm status</div>
 </div>
 
-<!-- ── Info strip ── -->
+<!-- Info strip -->
 <div class="info-strip">
-  <div class="info-item">
-    <div class="info-label">Departure</div>
-    <div class="info-value">{{ order.departure_date }}</div>
-  </div>
+  <div class="info-item"><div class="info-label">Departure</div><div class="info-value">{{ order.departure_date }}</div></div>
   {% if order.sale_date %}
-  <div class="info-item">
-    <div class="info-label">Sale Date</div>
-    <div class="info-value">{{ order.sale_date }}</div>
-  </div>
+  <div class="info-item"><div class="info-label">Sale Date</div><div class="info-value">{{ order.sale_date }}</div></div>
   {% endif %}
-  <div class="info-item">
-    <div class="info-label">Handler</div>
-    <div class="info-value">{{ order.handled_by }}</div>
-  </div>
+  <div class="info-item"><div class="info-label">Handler</div><div class="info-value">{{ order.handled_by }}</div></div>
   {% if order.delivery_terms %}
-  <div class="info-item">
-    <div class="info-label">Terms</div>
-    <div class="info-value">{{ order.delivery_terms }}</div>
-  </div>
+  <div class="info-item"><div class="info-label">Terms</div><div class="info-value">{{ order.delivery_terms }}</div></div>
   {% endif %}
   {% if order.carrier %}
-  <div class="info-item">
-    <div class="info-label">Carrier</div>
-    <div class="info-value">{{ order.carrier }}</div>
-  </div>
+  <div class="info-item"><div class="info-label">Carrier</div><div class="info-value">{{ order.carrier }}</div></div>
   {% endif %}
 </div>
 
-<!-- ── Lines ── -->
+<!-- Lines -->
 {% set ns = namespace(cur_transit='', cur_group='', section_open=false) %}
-
 {% for line in order.lines %}
-
   {% if line.transit != ns.cur_transit %}
     {% if ns.section_open %}</div>{% endif %}
     {% set ns.cur_transit = line.transit %}
@@ -456,14 +187,11 @@ body {
     </div>
     {% endif %}
   {% endif %}
-
   {% if line.product_group != ns.cur_group %}
     {% if ns.section_open %}</div>{% endif %}
     {% set ns.cur_group = line.product_group %}
     {% set ns.section_open = true %}
-    {% if line.product_group %}
-    <div class="product-group">{{ line.product_group }}</div>
-    {% endif %}
+    {% if line.product_group %}<div class="product-group">{{ line.product_group }}</div>{% endif %}
     <div class="lines-section">
   {% endif %}
 
@@ -474,117 +202,67 @@ body {
         <div class="status-dot"></div>
       </div>
       <div class="line-pills">
-        <div class="pill qty">
-          <span class="pill-label">qty</span>
-          <span class="pill-value">{{ line.qty }} {{ line.unit }}</span>
-        </div>
-        {% if line.size %}
-        <div class="pill">
-          <span class="pill-label">size</span>
-          <span class="pill-value">{{ line.size }}</span>
-        </div>
-        {% endif %}
-        {% if line.lot %}
-        <div class="pill lot">
-          <span class="pill-label">lot</span>
-          <span class="pill-value">{{ line.lot }}</span>
-        </div>
-        {% endif %}
-        {% if line.grower %}
-        <div class="pill">
-          <span class="pill-label">grower</span>
-          <span class="pill-value">{{ line.grower }}</span>
-        </div>
-        {% endif %}
-        {% if line.country %}
-        <div class="pill">
-          <span class="pill-label">origin</span>
-          <span class="pill-value">{{ line.country }}</span>
-        </div>
-        {% endif %}
-        {% if line.arr_date %}
-        <div class="pill arr">
-          <span class="pill-label">arr.</span>
-          <span class="pill-value">{{ line.arr_date }}</span>
-        </div>
-        {% endif %}
-        {% if line.pallet %}
-        <div class="pill">
-          <span class="pill-label">pallet</span>
-          <span class="pill-value">{{ line.pallet }}</span>
-        </div>
-        {% endif %}
+        <div class="pill qty"><span class="pill-label">qty</span><span class="pill-value">{{ line.qty }} {{ line.unit }}</span></div>
+        {% if line.size   %}<div class="pill"><span class="pill-label">size</span><span class="pill-value">{{ line.size }}</span></div>{% endif %}
+        {% if line.lot    %}<div class="pill lot"><span class="pill-label">lot</span><span class="pill-value">{{ line.lot }}</span></div>{% endif %}
+        {% if line.grower %}<div class="pill"><span class="pill-label">grower</span><span class="pill-value">{{ line.grower }}</span></div>{% endif %}
+        {% if line.country%}<div class="pill"><span class="pill-label">origin</span><span class="pill-value">{{ line.country }}</span></div>{% endif %}
+        {% if line.arr_date%}<div class="pill arr"><span class="pill-label">arr.</span><span class="pill-value">{{ line.arr_date }}</span></div>{% endif %}
+        {% if line.pallet %}<div class="pill"><span class="pill-label">pallet</span><span class="pill-value">{{ line.pallet }}</span></div>{% endif %}
       </div>
     </div>
 
-    <!-- Segmented action buttons -->
     <div class="line-actions">
-      <button class="act-seg {% if line.status=='picked' %}sel-picked{% endif %}"
-              id="seg-picked-{{ loop.index0 }}"
-              onclick="setStatus({{ loop.index0 }}, 'picked')">✓ Picked</button>
-      <button class="act-seg {% if line.status=='short' %}sel-short{% endif %}"
-              id="seg-short-{{ loop.index0 }}"
-              onclick="setStatus({{ loop.index0 }}, 'short')">⚠ Short</button>
-      <button class="act-seg {% if line.status=='missing' %}sel-missing{% endif %}"
-              id="seg-missing-{{ loop.index0 }}"
-              onclick="setStatus({{ loop.index0 }}, 'missing')">✕ Missing</button>
+      <button class="act-seg {% if line.status=='picked' %}sel-picked{% endif %}"   id="seg-picked-{{ loop.index0 }}"  onclick="setStatus({{ loop.index0 }},'picked')">✓ Picked</button>
+      <button class="act-seg {% if line.status=='short' %}sel-short{% endif %}"    id="seg-short-{{ loop.index0 }}"   onclick="setStatus({{ loop.index0 }},'short')">⚠ Short</button>
+      <button class="act-seg {% if line.status=='missing' %}sel-missing{% endif %}" id="seg-missing-{{ loop.index0 }}" onclick="setStatus({{ loop.index0 }},'missing')">✕ Missing</button>
     </div>
 
-    <!-- Short qty -->
     <div class="short-row {% if line.status=='short' %}show{% endif %}" id="short-row-{{ loop.index0 }}">
       <span class="short-label">Actually picked:</span>
       <input class="short-input" type="number" min="0"
-             id="short-qty-{{ loop.index0 }}"
-             value="{{ line.short_qty }}"
-             placeholder="0"
+             id="short-qty-{{ loop.index0 }}" value="{{ line.short_qty }}" placeholder="0"
              onchange="saveShortQty({{ loop.index0 }})">
       <span class="short-of">of {{ line.qty }} {{ line.unit }}</span>
     </div>
 
-    <!-- Note -->
     <button class="note-toggle" onclick="toggleNote({{ loop.index0 }})">
       <span style="font-size:14px">📝</span>
       <span id="note-lbl-{{ loop.index0 }}">{{ 'Edit note' if line.note else 'Add note' }}</span>
     </button>
     <div class="note-area-wrap {% if line.note %}show{% endif %}" id="note-wrap-{{ loop.index0 }}">
-      <textarea class="note-area"
-                id="note-{{ loop.index0 }}"
-                rows="2"
-                placeholder="e.g. Wrong grower label, 1 box damaged, waiting for arrival…"
+      <textarea class="note-area" id="note-{{ loop.index0 }}" rows="2"
+                placeholder="e.g. Wrong grower label, 1 box damaged…"
                 onblur="saveNote({{ loop.index0 }})">{{ line.note }}</textarea>
     </div>
   </div>
-
 {% endfor %}
 {% if ns.section_open %}</div>{% endif %}
 
-<!-- ── Bottom bar ── -->
+<!-- Bottom bar -->
 <div class="bottom-bar">
   <div class="notify-row">
     <span class="notify-label">Notify</span>
     <select class="notify-select" id="manager-select">
       {% for m in managers %}
-      <option value="{{ loop.index0 }}">{{ m.name }}</option>
+      <option value="{{ m.id }}">{{ m.name }}</option>
       {% endfor %}
     </select>
   </div>
   <button class="complete-btn" id="complete-btn" onclick="completeOrder()">
-    Complete & Notify Manager
+    Complete &amp; Notify Manager
   </button>
 </div>
 
-<!-- ── Done screen ── -->
+<!-- Done screen -->
 <div class="done-screen" id="done-screen">
   <div class="done-icon-wrap" id="done-icon-wrap">🎉</div>
   <div class="done-title" id="done-title">All Done!</div>
-  <div class="done-sub" id="done-sub">Order confirmed and sent to manager.</div>
-
+  <div class="done-sub" id="done-sub">Manager has been notified by email.</div>
   <div class="done-summary" id="done-summary"></div>
-
-  <a href="#" id="wa-link" class="wa-btn" target="_blank">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.558 4.121 1.535 5.853L.057 23.885a.5.5 0 00.608.61l6.168-1.611A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.667-.502-5.197-1.38l-.372-.22-3.861 1.008 1.036-3.758-.242-.387A9.94 9.94 0 012 12C2 6.478 6.478 2 12 2s10 4.478 10 10-4.478 10-10 10z"/></svg>
-    Send to Manager
-  </a>
+  <div class="email-sent-banner">
+    <span>📧</span> Email sent to manager
+  </div>
   <button class="reopen-btn" onclick="reopenOrder()">↩ Reopen — more items arriving later</button>
 </div>
 
@@ -593,24 +271,21 @@ const ORDER_ID  = "{{ order.order_id }}";
 const TOTAL     = {{ order.lines|length }};
 const lineData  = {{ order.lines | tojson }};
 
-const statuses  = lineData.map(l => l.status  || 'pending');
+const statuses  = lineData.map(l => l.status   || 'pending');
 const shortQtys = lineData.map(l => l.short_qty || '');
-const notes     = lineData.map(l => l.note    || '');
+const notes     = lineData.map(l => l.note      || '');
 
 function updateProgress() {
   const done    = statuses.filter(s => s !== 'pending').length;
-  const picked  = statuses.filter(s => s === 'picked').length;
   const short   = statuses.filter(s => s === 'short').length;
   const missing = statuses.filter(s => s === 'missing').length;
-
   document.getElementById('counter').textContent = done + ' / ' + TOTAL;
   document.getElementById('progress').style.width = (done / TOTAL * 100) + '%';
-
   const btn = document.getElementById('complete-btn');
   if (done === TOTAL) {
     const hasEx = short > 0 || missing > 0;
     document.getElementById('prog-label').textContent =
-      hasEx ? '⚠️ All confirmed — ' + (short + missing) + ' exception(s)' : '✅ All items confirmed — ready to complete';
+      hasEx ? '⚠️ All confirmed — ' + (short+missing) + ' exception(s)' : '✅ All items confirmed — ready to complete';
     btn.classList.toggle('has-exceptions', hasEx);
     btn.textContent = hasEx ? '⚠ Complete with Exceptions' : 'Complete & Notify Manager';
   } else {
@@ -623,17 +298,11 @@ function updateProgress() {
 function setStatus(idx, newStatus) {
   if (statuses[idx] === newStatus) newStatus = 'pending';
   statuses[idx] = newStatus;
-
-  const item = document.getElementById('item-' + idx);
-  item.className = 'line-item status-' + newStatus;
-
+  document.getElementById('item-' + idx).className = 'line-item status-' + newStatus;
   ['picked','short','missing'].forEach(s => {
-    const seg = document.getElementById('seg-' + s + '-' + idx);
-    seg.className = 'act-seg' + (newStatus === s ? ' sel-' + s : '');
+    document.getElementById('seg-'+s+'-'+idx).className = 'act-seg' + (newStatus===s ? ' sel-'+s : '');
   });
-
   document.getElementById('short-row-' + idx).classList.toggle('show', newStatus === 'short');
-
   updateProgress();
   saveLine(idx);
 }
@@ -646,8 +315,7 @@ function saveShortQty(idx) {
 function toggleNote(idx) {
   const wrap = document.getElementById('note-wrap-' + idx);
   const showing = wrap.classList.toggle('show');
-  document.getElementById('note-lbl-' + idx).textContent =
-    showing ? 'Hide note' : (notes[idx] ? 'Edit note' : 'Add note');
+  document.getElementById('note-lbl-' + idx).textContent = showing ? 'Hide note' : (notes[idx] ? 'Edit note' : 'Add note');
   if (showing) document.getElementById('note-' + idx).focus();
 }
 
@@ -661,7 +329,7 @@ function saveLine(idx) {
   fetch('/update_line/' + ORDER_ID + '/' + idx, {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ status: statuses[idx], short_qty: shortQtys[idx], note: notes[idx] })
+    body: JSON.stringify({status: statuses[idx], short_qty: shortQtys[idx], note: notes[idx]})
   });
 }
 
@@ -670,11 +338,11 @@ async function completeOrder() {
   btn.disabled = true;
   btn.textContent = 'Sending…';
 
-  const managerIdx = parseInt(document.getElementById('manager-select').value);
+  const managerId = parseInt(document.getElementById('manager-select').value);
   const res  = await fetch('/complete/' + ORDER_ID, {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ manager_idx: managerIdx })
+    body: JSON.stringify({manager_id: managerId})
   });
   const data = await res.json();
 
@@ -686,38 +354,45 @@ async function completeOrder() {
   const wrap = document.getElementById('done-icon-wrap');
   wrap.textContent = isClean ? '🎉' : '⚠️';
   wrap.className   = 'done-icon-wrap ' + (isClean ? 'clean' : 'partial');
-
   document.getElementById('done-title').textContent = isClean ? 'All Done!' : 'Done with Exceptions';
   document.getElementById('done-sub').textContent   = isClean
     ? 'All ' + TOTAL + ' items successfully picked.'
-    : picked + ' of ' + TOTAL + ' items fully picked. Manager notified.';
+    : picked + ' of ' + TOTAL + ' items picked. Manager notified.';
 
-  const sum = document.getElementById('done-summary');
-  sum.innerHTML = `
+  document.getElementById('done-summary').innerHTML = `
     <div class="summary-row"><span class="summary-label">✅ Picked</span><span class="summary-value" style="color:var(--lime)">${picked}</span></div>
     ${short   ? `<div class="summary-row"><span class="summary-label">⚠ Short</span><span class="summary-value" style="color:var(--warn)">${short}</span></div>` : ''}
     ${missing ? `<div class="summary-row"><span class="summary-label">✕ Missing</span><span class="summary-value" style="color:var(--danger)">${missing}</span></div>` : ''}
     <div class="summary-row"><span class="summary-label">📦 Order</span><span class="summary-value">#${ORDER_ID}</span></div>
   `;
 
-  if (data.wa_url) {
-    document.getElementById('wa-link').href = data.wa_url;
-  } else {
-    document.getElementById('wa-link').onclick = e => { e.preventDefault(); alert(data.msg); };
-    document.getElementById('wa-link').textContent = '📋 Copy confirmation message';
-  }
-
   document.getElementById('done-screen').classList.add('show');
+
+  // Keep screen awake during active picking (release on done)
+  if (navigator.wakeLock) {
+    try { await navigator.wakeLock.request('screen'); } catch(_) {}
+  }
 }
 
 async function reopenOrder() {
-  await fetch('/reopen/' + ORDER_ID, { method: 'POST' });
+  await fetch('/reopen/' + ORDER_ID, {method:'POST'});
   document.getElementById('done-screen').classList.remove('show');
   document.getElementById('complete-btn').disabled = false;
   updateProgress();
 }
 
+// Wake lock — keep screen on while picking
+async function acquireWakeLock() {
+  if (navigator.wakeLock) {
+    try { await navigator.wakeLock.request('screen'); } catch(_) {}
+  }
+}
+acquireWakeLock();
 updateProgress();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/static/sw.js');
+}
 </script>
 </body>
 </html>

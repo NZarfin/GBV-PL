@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gaia Pick">
+<link rel="manifest" href="/static/manifest.json">
+<title>Gaia Herbs — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #f2f2f7;
+  --surface: #ffffff;
+  --border:  #e0e0e5;
+  --text:    #1c1c1e;
+  --text2:   #6c6c70;
+  --accent:  #1a7a4a;
+  --accent2: #15643d;
+  --danger:  #ff3b30;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: 22px;
+  padding: 36px 32px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.04);
+}
+
+.brand {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 28px;
+}
+.brand-icon {
+  width: 44px; height: 44px;
+  background: var(--accent);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.brand-name { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+.brand-sub  { font-size: 11px; color: var(--text2); font-family: monospace; letter-spacing: 0.5px; margin-top: 1px; }
+
+/* Tabs */
+.tabs {
+  display: flex;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 3px;
+  margin-bottom: 24px;
+  gap: 2px;
+}
+.tab {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px; font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.tab.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+/* Form */
+.field { margin-bottom: 14px; }
+.field label {
+  display: block;
+  font-size: 13px; font-weight: 600;
+  color: var(--text2);
+  margin-bottom: 6px;
+}
+.field input,
+.field select {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  padding: 13px 14px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  transition: border-color 0.15s;
+  appearance: none;
+}
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: white;
+}
+.pin-input {
+  letter-spacing: 6px;
+  font-size: 20px !important;
+  font-weight: 700;
+  text-align: center;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 14px;
+  background: var(--accent);
+  color: white;
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px; font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.15s;
+  letter-spacing: -0.2px;
+}
+.submit-btn:hover  { background: var(--accent2); }
+.submit-btn:active { transform: scale(0.98); }
+
+.error-msg {
+  background: #fff2f2;
+  border: 1.5px solid #ffd0d0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--danger);
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="brand">
+    <div class="brand-icon">🌿</div>
+    <div>
+      <div class="brand-name">Gaia Herbs</div>
+      <div class="brand-sub">WAREHOUSE OPS</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="tab-manager" onclick="switchTab('manager')">Manager</button>
+    <button class="tab"        id="tab-picker"  onclick="switchTab('picker')">Picker</button>
+  </div>
+
+  {% if error %}
+  <div class="error-msg">{{ error }}</div>
+  {% endif %}
+
+  <!-- Manager form -->
+  <form id="form-manager" method="POST" action="/login{% if request.args.next %}?next={{ request.args.next }}{% endif %}">
+    <input type="hidden" name="role" value="manager">
+    <div class="field">
+      <label>Email</label>
+      <input type="email" name="email" placeholder="you@gaiaherbs.nl"
+             autocomplete="email" inputmode="email" required>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" name="password" placeholder="Password"
+             autocomplete="current-password" required>
+    </div>
+    <button type="submit" class="submit-btn">Sign In →</button>
+  </form>
+
+  <!-- Picker form -->
+  <form id="form-picker" method="POST" action="/login{% if request.args.next %}?next={{ request.args.next }}{% endif %}" style="display:none">
+    <input type="hidden" name="role" value="picker">
+    <div class="field">
+      <label>Your name</label>
+      <select name="picker_id" required>
+        <option value="" disabled selected>Select your name…</option>
+        {% for p in pickers %}
+        <option value="{{ p.id }}">{{ p.name }}</option>
+        {% endfor %}
+      </select>
+      {% if not pickers %}
+      <p style="font-size:12px;color:var(--text2);margin-top:6px">No pickers set up yet — ask your manager.</p>
+      {% endif %}
+    </div>
+    <div class="field">
+      <label>PIN</label>
+      <input class="pin-input" type="password" name="pin"
+             inputmode="numeric" pattern="[0-9]{4}" maxlength="4"
+             placeholder="••••" autocomplete="off" required>
+    </div>
+    <button type="submit" class="submit-btn">Sign In →</button>
+  </form>
+</div>
+
+<script>
+function switchTab(tab) {
+  document.getElementById('tab-manager').classList.toggle('active', tab === 'manager');
+  document.getElementById('tab-picker').classList.toggle('active', tab === 'picker');
+  document.getElementById('form-manager').style.display = tab === 'manager' ? '' : 'none';
+  document.getElementById('form-picker').style.display  = tab === 'picker'  ? '' : 'none';
+}
+// If error is shown, auto-select the correct tab based on the submitted role
+switchTab('{{ active_tab or "manager" }}');
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/static/sw.js');
+}
+</script>
+</body>
+</html>

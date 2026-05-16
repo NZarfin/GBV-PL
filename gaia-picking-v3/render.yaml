@@ -4,6 +4,10 @@ services:
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 4
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1
     envVars:
       - key: IMAP_HOST
         value: imap.strato.de
@@ -17,3 +21,15 @@ services:
         value: 60
       - key: BASE_URL
         sync: false
+      - key: SMTP_HOST
+        value: smtp.strato.de
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        value: Pickinglists@gaiaherbs.nl
+      - key: SMTP_PASS
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: DB_PATH
+        value: /data/picking.db
