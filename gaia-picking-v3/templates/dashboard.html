@@ -412,6 +412,14 @@ select:focus { outline: none; border-color: var(--accent); }
   </div>
 
   <div class="sidebar-section">
+    <div class="sidebar-label">Developer</div>
+    <button class="nav-item" onclick="loadTestData()" id="load-test-btn">
+      <span class="nav-icon">🧪</span>
+      Load test orders
+    </button>
+  </div>
+
+  <div class="sidebar-section">
     <div class="sidebar-label">Status</div>
     {% set updated = orders | selectattr('has_update','defined') | selectattr('has_update','eq',true) | list | length %}
     {% if updated > 0 %}
@@ -682,6 +690,20 @@ function filterStatus(status, btn) {
   btn.classList.add('active-' + (status === 'in_progress' ? 'progress' : status));
   applyFilters();
 }
+async function loadTestData() {
+  const btn = document.getElementById('load-test-btn');
+  btn.style.opacity = '0.5';
+  const res  = await fetch('/test/load-all', {method:'POST'});
+  const data = await res.json();
+  btn.style.opacity = '';
+  if (data.loaded) {
+    showToast('Loaded ' + data.loaded.length + ' test order(s) — refreshing…');
+    setTimeout(() => location.reload(), 1200);
+  } else {
+    showToast('Error: ' + (data.error || 'unknown'));
+  }
+}
+
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;

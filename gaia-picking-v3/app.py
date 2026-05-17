@@ -326,14 +326,37 @@ def test_load():
         return "Failed to parse sample.xml", 500
     orders[order["order_id"]] = order
     save_order(order)
-    return (
-        f"Loaded #{order['order_id']} — {len(order['lines'])} lines<br><br>"
-        + "<br>".join(
-            f"• {l['product']} | qty:{l['qty']} {l['unit']} | "
-            f"lot:<b>{l['lot'] or '—'}</b> | grower:{l['grower'] or '—'}"
-            for l in order["lines"]
-        )
-    )
+    return redirect("/")
+
+
+@app.route("/test/load-all", methods=["POST"])
+@require_manager
+def test_load_all():
+    test_dir = os.path.join(os.path.dirname(__file__), "test-data")
+    if not os.path.isdir(test_dir):
+        return jsonify({"error": "test-data directory not found"}), 404
+    loaded = []
+    for fname in sorted(os.listdir(test_dir)):
+        if not fname.endswith(".xml"):
+            continue
+        with open(os.path.join(test_dir, fname), "rb") as f:
+            order = parse_picking_xml(f.read())
+        if not order:
+            continue
+        oid = order["order_id"]
+        if oid in orders and fname.endswith("UPDATE.xml"):
+            diff_str, new_lines = __import__("xml_parser").compute_diff(orders[oid], order)
+            if new_lines or diff_str != "Minor update received":
+                orders[oid]["has_update"]    = True
+                orders[oid]["update_diff"]   = diff_str
+                orders[oid]["pending_lines"] = new_lines
+                save_order(orders[oid])
+                loaded.append(f"update:{oid}")
+        else:
+            orders[oid] = order
+            save_order(order)
+            loaded.append(f"new:{oid}")
+    return jsonify({"loaded": loaded})
 
 
 # ── Health check ─────────────────────────────────────────────────────────────
