@@ -118,13 +118,22 @@ def index():
         my_orders = sorted(my_orders, key=lambda o: o.get("departure_date", ""))
         return render_template("picker_home.html", orders=my_orders, user_name=session.get("name"))
 
+    def _priority(o):
+        if o.get("has_update"):           return 0
+        if o["status"] == "partial":      return 1
+        if o["status"] == "pending":      return 2
+        if o["status"] in ("assigned", "in_progress"): return 3
+        return 4
+
     order_list = sorted(
         orders.values(),
-        key=lambda o: (o.get("departure_date", ""), o.get("created_at", "")),
+        key=lambda o: (_priority(o), o.get("departure_date", ""), o.get("created_at", "")),
     )
+    needs_attention = [o for o in order_list if _priority(o) <= 1]
     return render_template(
         "dashboard.html",
         orders=order_list,
+        needs_attention=needs_attention,
         pickers=get_pickers(),
         managers=get_managers(),
         user_name=session.get("name"),

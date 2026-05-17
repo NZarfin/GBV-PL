@@ -55,6 +55,7 @@ def parse_picking_xml(xml_bytes):
     handled_by     = find_by_field(root, "VKHBHUSR")
     delivery_terms = find_by_field(root, "LVCOMS")
     carrier        = find_by_field(root, "RELNAAM1")
+    ref            = find_by_field(root, "VKHREF")
 
     customer_raw   = find_by_objname(root, "Text7")
     customer_lines = [l.strip() for l in customer_raw.split("\n") if l.strip()]
@@ -121,6 +122,7 @@ def parse_picking_xml(xml_bytes):
     return {
         "order_id":       order_num,
         "customer":       customer,
+        "ref":            ref,
         "sale_date":      sale_date,
         "departure_date": departure_date,
         "handled_by":     handled_by,

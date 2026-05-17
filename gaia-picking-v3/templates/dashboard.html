@@ -199,6 +199,15 @@ body {
 .order-customer { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
 .order-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 6px; font-size: 13px; color: var(--text2); }
 .order-meta span { display: flex; align-items: center; gap: 4px; }
+.attention-section { margin: 0 32px 0; padding: 0; }
+.attention-header { display: flex; align-items: center; gap: 10px; padding: 20px 0 10px; }
+.attention-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--danger); }
+.attention-line  { flex: 1; height: 2px; background: #fde8e8; border-radius: 2px; }
+.order-card.needs-attention { border-color: #fca5a5; }
+.order-card.needs-attention::before { background: var(--danger); }
+.not-ready-banner { background: #fef2f2; border: 1px solid #fca5a5; border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; color: #991b1b; }
+.missing-chip { display: inline-flex; align-items: center; gap: 4px; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 700; color: var(--danger); }
+.later-chip   { display: inline-flex; align-items: center; gap: 4px; background: #eff6ff; border: 1px solid #93c5fd; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 700; color: var(--info); }
 .badge {
   display: inline-flex; align-items: center; gap: 5px;
   padding: 5px 12px; border-radius: 20px;
@@ -509,138 +518,277 @@ select:focus { outline: none; border-color: var(--accent); }
       <div class="empty-sub">Waiting for XML emails at pickinglists@gaiaherbs.nl</div>
     </div>
     {% else %}
+
+    {# ── Needs Attention ─────────────────────────────────────────────────── #}
+    {% if needs_attention %}
+    <div class="attention-section">
+      <div class="attention-header">
+        <span class="attention-label">⚠ Needs Attention</span>
+        <div class="attention-line"></div>
+        <span style="font-size:12px;color:var(--danger);font-weight:600">
+          {{ needs_attention|length }} order{{ 's' if needs_attention|length != 1 }}
+        </span>
+      </div>
+      {% for order in needs_attention %}
+        {% set missing_c = order.lines | selectattr('status','eq','missing') | list | length %}
+        {% set short_c   = order.lines | selectattr('status','eq','short')   | list | length %}
+        {% set later_c   = order.lines | selectattr('status','eq','later')   | list | length %}
+        <div class="order-card needs-attention status-{{ order.status }} {% if order.has_update %}has-update{% endif %}"
+             id="card-{{ order.order_id }}"
+             data-date="{{ order.departure_date }}"
+             data-status="{{ order.status }}">
+
+          {% if missing_c or short_c %}
+          <div class="not-ready-banner">
+            ⚠ Action required:
+            {% if missing_c %}<span class="missing-chip">✕ {{ missing_c }} missing</span>{% endif %}
+            {% if short_c   %}<span class="missing-chip" style="background:#fff8e1;border-color:#ffe082;color:#856404">⚠ {{ short_c }} short</span>{% endif %}
+            {% if later_c   %}<span class="later-chip">🕐 {{ later_c }} later</span>{% endif %}
+          </div>
+          {% endif %}
+
+          {% if order.has_update %}
+          <div class="update-banner show">
+            <strong>⚡ Order updated</strong> — Re-sent with changes.<br>
+            <span style="font-size:12px">{{ order.update_diff or 'New version received.' }}</span>
+            <div class="update-actions">
+              <button class="btn-accept-update"  onclick="acceptUpdate('{{ order.order_id }}')">✓ Accept changes</button>
+              <button class="btn-dismiss-update" onclick="dismissUpdate('{{ order.order_id }}')">Keep original</button>
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="order-top">
+            <div class="order-left">
+              <div class="order-id">#{{ order.order_id }}</div>
+              <div class="order-customer">{{ order.customer or '—' }}</div>
+              <div class="order-meta">
+                <span>📅 {{ order.departure_date }}</span>
+                {% if order.ref %}<span>🏷 {{ order.ref }}</span>{% endif %}
+                {% if order.sale_date %}<span>🗓 {{ order.sale_date }}</span>{% endif %}
+                {% if order.handled_by %}<span>👤 {{ order.handled_by }}</span>{% endif %}
+                {% if order.delivery_terms %}<span>🚚 {{ order.delivery_terms }}</span>{% endif %}
+                {% if order.carrier %}<span>🚛 {{ order.carrier }}</span>{% endif %}
+                <span>📋 {{ order.lines|length }} items</span>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+              <span class="badge badge-{{ 'updated' if order.has_update else order.status }}">
+                {% if order.has_update %}⚡ Updated
+                {% elif order.status == 'pending' %}● Pending
+                {% elif order.status in ['assigned','in_progress'] %}● In Progress
+                {% elif order.status == 'completed' %}✓ Completed
+                {% elif order.status == 'partial' %}⚠ Exceptions
+                {% endif %}
+              </span>
+              {% if order.completed_at %}
+              <div style="font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace">
+                {{ order.completed_at[:16] | replace('T',' ') }}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          {% set ns2 = namespace(block=0, euro=0, transit=0) %}
+          {% for l in order.lines %}
+            {% if l.pallet == 'Block' %}{% set ns2.block = ns2.block + 1 %}{% endif %}
+            {% if l.pallet == 'Euro'  %}{% set ns2.euro  = ns2.euro  + 1 %}{% endif %}
+            {% if l.arr_date          %}{% set ns2.transit = ns2.transit + 1 %}{% endif %}
+          {% endfor %}
+          <div class="order-summary-row">
+            {% if ns2.transit > 0 %}<span class="transit-badge">🕐 {{ ns2.transit }} in transit</span>{% endif %}
+            <span class="pallet-tally">
+              {% if ns2.block %}🟫 {{ ns2.block }}×Block{% endif %}{% if ns2.block and ns2.euro %} · {% endif %}{% if ns2.euro %}🟨 {{ ns2.euro }}×Euro{% endif %}
+              = {{ "%.2f"|format(ns2.block * 1.0 + ns2.euro * 0.75) }}p
+            </span>
+          </div>
+
+          <div class="line-chips">
+            {% for line in order.lines %}
+            <div class="chip {% if line.arr_date %}chip-transit{% endif %}">
+              <span class="chip-qty">{{ line.qty }}×</span>
+              <span>{{ line.product }}</span>
+              {% if line.lot    %}<span class="chip-lot">{{ line.lot }}</span>{% endif %}
+              {% if line.grower %}<span class="chip-grower">{{ line.grower }}</span>{% endif %}
+              {% if line.arr_date %}<span class="chip-arr">🕐 {{ line.arr_date }}</span>{% endif %}
+              {% if line.status == 'picked'  %}<span style="color:var(--lime)">✓</span>
+              {% elif line.status == 'short'   %}<span style="color:var(--warn)">⚠</span>
+              {% elif line.status == 'missing' %}<span style="color:var(--danger);font-weight:700">✕</span>
+              {% elif line.status == 'later'   %}<span style="color:var(--info)">🕐</span>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="order-actions">
+            {% if order.status == 'pending' %}
+              {% if pickers %}
+              <select class="picker-select" id="picker-{{ order.order_id }}">
+                {% for p in pickers %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}
+              </select>
+              <button class="btn btn-primary" onclick="assignOrder('{{ order.order_id }}')">Assign →</button>
+              {% else %}
+              <span style="font-size:13px;color:var(--text2)">No pickers — add in <button onclick="openAdmin()" style="background:none;border:none;color:var(--accent);font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px">Team</button></span>
+              {% endif %}
+            {% elif order.status in ['assigned','in_progress'] %}
+              <div class="picker-assigned-tag">
+                <div class="avatar">{{ order.picker.name[0] if order.picker else '?' }}</div>
+                {{ order.picker.name if order.picker else 'Unassigned' }}
+              </div>
+              <a class="btn btn-outline" href="/pick/{{ order.order_id }}" target="_blank">View List</a>
+              <button class="btn btn-ghost" onclick="copyLink('{{ order.order_id }}')">Copy Link</button>
+            {% elif order.status in ['completed','partial'] %}
+              <div class="picker-assigned-tag">
+                <div class="avatar">{{ order.picker.name[0] if order.picker else '?' }}</div>
+                {{ order.picker.name if order.picker else '—' }}
+              </div>
+              <a class="btn btn-outline" href="/pick/{{ order.order_id }}" target="_blank">View Result</a>
+              <button class="btn btn-reopen" onclick="reopenOrder('{{ order.order_id }}')">↩ Reopen</button>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {# ── All Orders (date-grouped, attention orders excluded) ─────────────── #}
+    {% set attention_ids = needs_attention | map(attribute='order_id') | list %}
     {% set ns = namespace(cur_date='') %}
     {% for order in orders | sort(attribute='departure_date') %}
-      {% if order.departure_date != ns.cur_date %}
-        {% set ns.cur_date = order.departure_date %}
-        <div class="date-group-header" data-date-header="{{ order.departure_date }}">
-          <div class="date-group-label">
-            {% if order.departure_date == today %}📅 Today — {{ order.departure_date }}
-            {% elif order.departure_date == tomorrow %}📅 Tomorrow — {{ order.departure_date }}
-            {% else %}📅 {{ order.departure_date }}{% endif %}
+      {% if order.order_id not in attention_ids %}
+        {% if order.departure_date != ns.cur_date %}
+          {% set ns.cur_date = order.departure_date %}
+          <div class="date-group-header" data-date-header="{{ order.departure_date }}">
+            <div class="date-group-label">
+              {% if order.departure_date == today %}📅 Today — {{ order.departure_date }}
+              {% elif order.departure_date == tomorrow %}📅 Tomorrow — {{ order.departure_date }}
+              {% else %}📅 {{ order.departure_date }}{% endif %}
+            </div>
+            <div class="date-group-line"></div>
+            <div class="date-group-count">
+              {{ orders | selectattr('departure_date','eq',order.departure_date) | list | length }} orders
+            </div>
           </div>
-          <div class="date-group-line"></div>
-          <div class="date-group-count">
-            {{ orders | selectattr('departure_date','eq',order.departure_date) | list | length }} orders
+        {% endif %}
+
+        {% set missing_c = order.lines | selectattr('status','eq','missing') | list | length %}
+        {% set short_c   = order.lines | selectattr('status','eq','short')   | list | length %}
+        {% set later_c   = order.lines | selectattr('status','eq','later')   | list | length %}
+        <div class="order-card status-{{ order.status }} {% if order.has_update %}has-update{% endif %}"
+             id="card-{{ order.order_id }}"
+             data-date="{{ order.departure_date }}"
+             data-status="{{ order.status }}">
+
+          {% if missing_c or short_c %}
+          <div class="not-ready-banner">
+            ⚠ Action required:
+            {% if missing_c %}<span class="missing-chip">✕ {{ missing_c }} missing</span>{% endif %}
+            {% if short_c   %}<span class="missing-chip" style="background:#fff8e1;border-color:#ffe082;color:#856404">⚠ {{ short_c }} short</span>{% endif %}
+            {% if later_c   %}<span class="later-chip">🕐 {{ later_c }} later</span>{% endif %}
+          </div>
+          {% endif %}
+
+          {% if order.has_update %}
+          <div class="update-banner show">
+            <strong>⚡ Order updated</strong> — Re-sent with changes.<br>
+            <span style="font-size:12px">{{ order.update_diff or 'New version received.' }}</span>
+            <div class="update-actions">
+              <button class="btn-accept-update"  onclick="acceptUpdate('{{ order.order_id }}')">✓ Accept changes</button>
+              <button class="btn-dismiss-update" onclick="dismissUpdate('{{ order.order_id }}')">Keep original</button>
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="order-top">
+            <div class="order-left">
+              <div class="order-id">#{{ order.order_id }}</div>
+              <div class="order-customer">{{ order.customer or '—' }}</div>
+              <div class="order-meta">
+                <span>📅 {{ order.departure_date }}</span>
+                {% if order.ref %}<span>🏷 {{ order.ref }}</span>{% endif %}
+                {% if order.sale_date %}<span>🗓 {{ order.sale_date }}</span>{% endif %}
+                {% if order.handled_by %}<span>👤 {{ order.handled_by }}</span>{% endif %}
+                {% if order.delivery_terms %}<span>🚚 {{ order.delivery_terms }}</span>{% endif %}
+                {% if order.carrier %}<span>🚛 {{ order.carrier }}</span>{% endif %}
+                <span>📋 {{ order.lines|length }} items</span>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+              <span class="badge badge-{{ 'updated' if order.has_update else order.status }}">
+                {% if order.has_update %}⚡ Updated
+                {% elif order.status == 'pending' %}● Pending
+                {% elif order.status in ['assigned','in_progress'] %}● In Progress
+                {% elif order.status == 'completed' %}✓ Completed
+                {% elif order.status == 'partial' %}⚠ Exceptions
+                {% endif %}
+              </span>
+              {% if order.completed_at %}
+              <div style="font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace">
+                {{ order.completed_at[:16] | replace('T',' ') }}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          {% set ns2 = namespace(block=0, euro=0, transit=0) %}
+          {% for l in order.lines %}
+            {% if l.pallet == 'Block' %}{% set ns2.block = ns2.block + 1 %}{% endif %}
+            {% if l.pallet == 'Euro'  %}{% set ns2.euro  = ns2.euro  + 1 %}{% endif %}
+            {% if l.arr_date          %}{% set ns2.transit = ns2.transit + 1 %}{% endif %}
+          {% endfor %}
+          <div class="order-summary-row">
+            {% if ns2.transit > 0 %}<span class="transit-badge">🕐 {{ ns2.transit }} in transit</span>{% endif %}
+            <span class="pallet-tally">
+              {% if ns2.block %}🟫 {{ ns2.block }}×Block{% endif %}{% if ns2.block and ns2.euro %} · {% endif %}{% if ns2.euro %}🟨 {{ ns2.euro }}×Euro{% endif %}
+              = {{ "%.2f"|format(ns2.block * 1.0 + ns2.euro * 0.75) }}p
+            </span>
+          </div>
+
+          <div class="line-chips">
+            {% for line in order.lines %}
+            <div class="chip {% if line.arr_date %}chip-transit{% endif %}">
+              <span class="chip-qty">{{ line.qty }}×</span>
+              <span>{{ line.product }}</span>
+              {% if line.lot    %}<span class="chip-lot">{{ line.lot }}</span>{% endif %}
+              {% if line.grower %}<span class="chip-grower">{{ line.grower }}</span>{% endif %}
+              {% if line.arr_date %}<span class="chip-arr">🕐 {{ line.arr_date }}</span>{% endif %}
+              {% if line.status == 'picked'  %}<span style="color:var(--lime)">✓</span>
+              {% elif line.status == 'short'   %}<span style="color:var(--warn)">⚠</span>
+              {% elif line.status == 'missing' %}<span style="color:var(--danger);font-weight:700">✕</span>
+              {% elif line.status == 'later'   %}<span style="color:var(--info)">🕐</span>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="order-actions">
+            {% if order.status == 'pending' %}
+              {% if pickers %}
+              <select class="picker-select" id="picker-{{ order.order_id }}">
+                {% for p in pickers %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}
+              </select>
+              <button class="btn btn-primary" onclick="assignOrder('{{ order.order_id }}')">Assign →</button>
+              {% else %}
+              <span style="font-size:13px;color:var(--text2)">No pickers — add in <button onclick="openAdmin()" style="background:none;border:none;color:var(--accent);font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px">Team</button></span>
+              {% endif %}
+            {% elif order.status in ['assigned','in_progress'] %}
+              <div class="picker-assigned-tag">
+                <div class="avatar">{{ order.picker.name[0] if order.picker else '?' }}</div>
+                {{ order.picker.name if order.picker else 'Unassigned' }}
+              </div>
+              <a class="btn btn-outline" href="/pick/{{ order.order_id }}" target="_blank">View List</a>
+              <button class="btn btn-ghost" onclick="copyLink('{{ order.order_id }}')">Copy Link</button>
+            {% elif order.status in ['completed','partial'] %}
+              <div class="picker-assigned-tag">
+                <div class="avatar">{{ order.picker.name[0] if order.picker else '?' }}</div>
+                {{ order.picker.name if order.picker else '—' }}
+              </div>
+              <a class="btn btn-outline" href="/pick/{{ order.order_id }}" target="_blank">View Result</a>
+              <button class="btn btn-reopen" onclick="reopenOrder('{{ order.order_id }}')">↩ Reopen</button>
+            {% endif %}
           </div>
         </div>
       {% endif %}
-
-      <div class="order-card status-{{ order.status }} {% if order.has_update %}has-update{% endif %}"
-           id="card-{{ order.order_id }}"
-           data-date="{{ order.departure_date }}"
-           data-status="{{ order.status }}">
-
-        {% if order.has_update %}
-        <div class="update-banner show">
-          <strong>⚡ Order updated</strong> — Re-sent with changes.<br>
-          <span style="font-size:12px">{{ order.update_diff or 'New version received.' }}</span>
-          <div class="update-actions">
-            <button class="btn-accept-update"  onclick="acceptUpdate('{{ order.order_id }}')">✓ Accept changes</button>
-            <button class="btn-dismiss-update" onclick="dismissUpdate('{{ order.order_id }}')">Keep original</button>
-          </div>
-        </div>
-        {% endif %}
-
-        <div class="order-top">
-          <div class="order-left">
-            <div class="order-id">#{{ order.order_id }}</div>
-            <div class="order-customer">{{ order.customer or '—' }}</div>
-            <div class="order-meta">
-              <span>📅 {{ order.departure_date }}</span>
-              {% if order.sale_date %}<span>🗓 {{ order.sale_date }}</span>{% endif %}
-              <span>👤 {{ order.handled_by }}</span>
-              {% if order.delivery_terms %}<span>🚚 {{ order.delivery_terms }}</span>{% endif %}
-              {% if order.carrier %}<span>🚛 {{ order.carrier }}</span>{% endif %}
-              <span>📋 {{ order.lines|length }} items</span>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-            <span class="badge badge-{{ 'updated' if order.has_update else order.status }}">
-              {% if order.has_update %}⚡ Updated
-              {% elif order.status == 'pending' %}● Pending
-              {% elif order.status in ['assigned','in_progress'] %}● In Progress
-              {% elif order.status == 'completed' %}✓ Completed
-              {% elif order.status == 'partial' %}⚠ Exceptions
-              {% endif %}
-            </span>
-            {% if order.completed_at %}
-            <div style="font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace">
-              {{ order.completed_at[:16] | replace('T',' ') }}
-            </div>
-            {% endif %}
-          </div>
-        </div>
-
-        <!-- Transit + pallet summary -->
-        {% set ns2 = namespace(block=0, euro=0, transit=0) %}
-        {% for l in order.lines %}
-          {% if l.pallet == 'Block' %}{% set ns2.block = ns2.block + 1 %}{% endif %}
-          {% if l.pallet == 'Euro'  %}{% set ns2.euro  = ns2.euro  + 1 %}{% endif %}
-          {% if l.arr_date          %}{% set ns2.transit = ns2.transit + 1 %}{% endif %}
-        {% endfor %}
-        <div class="order-summary-row">
-          {% if ns2.transit > 0 %}
-          <span class="transit-badge">🕐 {{ ns2.transit }} in transit</span>
-          {% endif %}
-          <span class="pallet-tally">
-            {% if ns2.block %}🟫 {{ ns2.block }}×Block{% endif %}{% if ns2.block and ns2.euro %} · {% endif %}{% if ns2.euro %}🟨 {{ ns2.euro }}×Euro{% endif %}
-            = {{ "%.2f"|format(ns2.block * 1.0 + ns2.euro * 0.75) }}p
-          </span>
-        </div>
-
-        <!-- Line chips -->
-        <div class="line-chips">
-          {% for line in order.lines %}
-          <div class="chip {% if line.arr_date %}chip-transit{% endif %}">
-            <span class="chip-qty">{{ line.qty }}×</span>
-            <span>{{ line.product }}</span>
-            {% if line.lot    %}<span class="chip-lot">{{ line.lot }}</span>{% endif %}
-            {% if line.grower %}<span class="chip-grower">{{ line.grower }}</span>{% endif %}
-            {% if line.arr_date %}<span class="chip-arr">🕐 {{ line.arr_date }}</span>{% endif %}
-            {% if line.status == 'picked'  %}<span style="color:var(--lime)">✓</span>
-            {% elif line.status == 'short'   %}<span style="color:var(--warn)">⚠</span>
-            {% elif line.status == 'missing' %}<span style="color:var(--danger)">✕</span>
-            {% elif line.status == 'later'   %}<span style="color:var(--info)">🕐</span>
-            {% endif %}
-          </div>
-          {% endfor %}
-        </div>
-
-        <!-- Actions -->
-        <div class="order-actions">
-          {% if order.status == 'pending' %}
-            {% if pickers %}
-            <select class="picker-select" id="picker-{{ order.order_id }}">
-              {% for p in pickers %}
-              <option value="{{ p.id }}">{{ p.name }}</option>
-              {% endfor %}
-            </select>
-            <button class="btn btn-primary" onclick="assignOrder('{{ order.order_id }}')">
-              Assign →
-            </button>
-            {% else %}
-            <span style="font-size:13px;color:var(--text2)">No pickers — add them in <button onclick="openAdmin()" style="background:none;border:none;color:var(--accent);font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px">Team</button></span>
-            {% endif %}
-
-          {% elif order.status in ['assigned','in_progress'] %}
-            <div class="picker-assigned-tag">
-              <div class="avatar">{{ order.picker.name[0] if order.picker else '?' }}</div>
-              {{ order.picker.name if order.picker else 'Unassigned' }}
-            </div>
-            <a class="btn btn-outline" href="/pick/{{ order.order_id }}" target="_blank">View List</a>
-            <button class="btn btn-ghost" onclick="copyLink('{{ order.order_id }}')">Copy Link</button>
-
-          {% elif order.status in ['completed','partial'] %}
-            <div class="picker-assigned-tag">
-              <div class="avatar">{{ order.picker.name[0] if order.picker else '?' }}</div>
-              {{ order.picker.name if order.picker else '—' }}
-            </div>
-            <a class="btn btn-outline" href="/pick/{{ order.order_id }}" target="_blank">View Result</a>
-            <button class="btn btn-reopen" onclick="reopenOrder('{{ order.order_id }}')">↩ Reopen</button>
-          {% endif %}
-        </div>
-      </div>
     {% endfor %}
     {% endif %}
   </div>
