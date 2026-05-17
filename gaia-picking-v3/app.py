@@ -1,5 +1,7 @@
 import os
+import re
 import logging
+from collections import OrderedDict
 from datetime import datetime, date, timedelta
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 
@@ -23,6 +25,48 @@ app.secret_key = config.SECRET_KEY
 app.permanent_session_lifetime = timedelta(hours=8)
 
 orders = {}
+
+# ── Picking sort ──────────────────────────────────────────────────────────────
+
+_WARM = {'basil', 'basilicum', 'basiliek', 'basilic'}
+
+def _qty_num(line):
+    try:
+        return float(re.sub(r'[^\d.]', '', str(line.get('qty', 0))) or 0)
+    except ValueError:
+        return 0
+
+def _is_warm(line):
+    return any(w in line.get('product', '').lower() for w in _WARM)
+
+def _sort_lines_for_picking(lines):
+    groups = OrderedDict()
+    for i, line in enumerate(lines):
+        key = (line.get('transit', ''), line.get('product_group', ''))
+        if key not in groups:
+            groups[key] = []
+        groups[key].append((i, line))
+
+    for key in groups:
+        groups[key].sort(key=lambda il: (not _is_warm(il[1]), -_qty_num(il[1])))
+
+    transits = OrderedDict()
+    for (transit, pg), items in groups.items():
+        if transit not in transits:
+            transits[transit] = []
+        transits[transit].append(((transit, pg), items))
+
+    for t in transits:
+        transits[t].sort(key=lambda x: (
+            not any(_is_warm(il[1]) for il in x[1]),
+            -max((_qty_num(il[1]) for il in x[1]), default=0),
+        ))
+
+    result = []
+    for group_list in transits.values():
+        for _, items in group_list:
+            result.extend(items)
+    return result
 
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
@@ -132,7 +176,8 @@ def pick(order_id):
         orders[order_id]["status"] = "in_progress"
         save_order(orders[order_id])
 
-    return render_template("pick.html", order=order, managers=get_managers())
+    lines_with_idx = _sort_lines_for_picking(order["lines"])
+    return render_template("pick.html", order=order, lines_with_idx=lines_with_idx, managers=get_managers())
 
 
 @app.route("/update_line/<order_id>/<int:line_idx>", methods=["POST"])
@@ -165,9 +210,10 @@ def complete(order_id):
     picked  = sum(1 for l in lines if l["status"] == "picked")
     short   = sum(1 for l in lines if l["status"] == "short")
     missing = sum(1 for l in lines if l["status"] == "missing")
+    later   = sum(1 for l in lines if l["status"] == "later")
     total   = len(lines)
 
-    final_status = "completed" if short == 0 and missing == 0 else "partial"
+    final_status = "completed" if short == 0 and missing == 0 and later == 0 else "partial"
     orders[order_id]["status"]       = final_status
     orders[order_id]["completed_at"] = datetime.now().isoformat()
     save_order(orders[order_id])
@@ -176,7 +222,7 @@ def complete(order_id):
     if manager and manager.get("email"):
         send_completion_email(orders[order_id], manager["email"])
 
-    return jsonify({"status": final_status, "picked": picked, "short": short, "missing": missing, "total": total})
+    return jsonify({"status": final_status, "picked": picked, "short": short, "missing": missing, "later": later, "total": total})
 
 
 @app.route("/reopen/<order_id>", methods=["POST"])

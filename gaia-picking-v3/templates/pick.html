@@ -42,6 +42,9 @@ body {
   position: sticky; top: 0; z-index: 20; padding: 14px 20px 12px;
 }
 .header-top { display: flex; align-items: center; justify-content: space-between; }
+.header-left { display: flex; align-items: flex-start; gap: 12px; }
+.header-home { font-size: 20px; color: var(--text2); text-decoration: none; padding: 2px 4px; margin-top: 2px; line-height: 1; }
+.header-home:active { opacity: 0.5; }
 .header-order { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text2); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
 .header-customer { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.2; margin-top: 1px; }
 .progress-count { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 500; color: var(--accent); white-space: nowrap; }
@@ -54,6 +57,13 @@ body {
 .info-item { display: flex; flex-direction: column; align-items: center; padding: 10px 16px; border-right: 1px solid var(--sep); white-space: nowrap; min-width: max-content; }
 .info-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
 .info-value { font-size: 13px; font-weight: 600; color: var(--text); margin-top: 2px; }
+
+/* ── Calculator ── */
+.calc-strip { display: flex; align-items: center; gap: 10px; background: var(--surface); border-bottom: 1px solid var(--sep); padding: 8px 16px; }
+.calc-icon { font-size: 15px; flex-shrink: 0; }
+.calc-input { flex: 1; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 10px; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text); min-width: 0; }
+.calc-input:focus { outline: none; border-color: var(--accent); }
+.calc-result { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 700; color: var(--accent); min-width: 56px; text-align: right; flex-shrink: 0; }
 
 /* ── Group headers ── */
 .transit-group { margin: 20px 16px 0; display: flex; align-items: center; gap: 10px; }
@@ -70,10 +80,13 @@ body {
 .line-name { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; line-height: 1.3; flex: 1; }
 .line-item.status-picked  .line-name { color: var(--text2); text-decoration: line-through; }
 .line-item.status-missing .line-name { color: var(--danger); }
+.line-item.status-later   .line-name { color: var(--info); }
 .status-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--border); margin-top: 4px; flex-shrink: 0; transition: all 0.2s; }
 .status-picked  .status-dot { background: var(--lime);   border-color: var(--lime); }
 .status-short   .status-dot { background: var(--warn);   border-color: var(--warn); }
 .status-missing .status-dot { background: var(--danger); border-color: var(--danger); }
+.status-later   .status-dot { background: var(--info);   border-color: var(--info); }
+.line-item.status-later { border-left: 3px solid var(--info); }
 .line-pills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
 .pill { display: flex; align-items: center; gap: 4px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; font-size: 11px; }
 .pill-label { color: var(--text3); font-weight: 500; }
@@ -84,12 +97,13 @@ body {
 
 /* ── Segmented buttons ── */
 .line-actions { display: flex; margin: 0 16px 14px; border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface2); }
-.act-seg { flex: 1; padding: 10px 4px; border: none; background: transparent; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.12s; color: var(--text2); border-right: 1px solid var(--border); text-align: center; }
+.act-seg { flex: 1; padding: 10px 2px; border: none; background: transparent; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.12s; color: var(--text2); border-right: 1px solid var(--border); text-align: center; }
 .act-seg:last-child { border-right: none; }
 .act-seg:active { opacity: 0.7; }
 .act-seg.sel-picked  { background: #d4edda; color: #155724; }
 .act-seg.sel-short   { background: #fff3cd; color: #856404; }
 .act-seg.sel-missing { background: #f8d7da; color: #721c24; }
+.act-seg.sel-later   { background: #e8f0fe; color: #1a56db; }
 
 /* ── Short qty row ── */
 .short-row { display: none; align-items: center; gap: 10px; margin: 0 16px 12px; padding: 10px 14px; background: #fff8e1; border: 1.5px solid #ffe082; border-radius: 10px; }
@@ -149,9 +163,12 @@ body {
 <!-- Header -->
 <div class="header">
   <div class="header-top">
-    <div>
-      <div class="header-order">Order #{{ order.order_id }}</div>
-      <div class="header-customer">{{ order.customer or 'Picking List' }}</div>
+    <div class="header-left">
+      <a href="/" class="header-home">⌂</a>
+      <div>
+        <div class="header-order">Order #{{ order.order_id }}</div>
+        <div class="header-customer">{{ order.customer or 'Picking List' }}</div>
+      </div>
     </div>
     <div class="progress-count" id="counter">0 / {{ order.lines|length }}</div>
   </div>
@@ -174,9 +191,18 @@ body {
   {% endif %}
 </div>
 
+<!-- Calculator -->
+<div class="calc-strip">
+  <span class="calc-icon">🧮</span>
+  <input class="calc-input" id="calc-input" type="text" inputmode="decimal"
+         placeholder="e.g.  15 + 5 + 23" oninput="updateCalc()"
+         autocomplete="off" autocorrect="off" spellcheck="false">
+  <span class="calc-result" id="calc-result"></span>
+</div>
+
 <!-- Lines -->
 {% set ns = namespace(cur_transit='', cur_group='', section_open=false) %}
-{% for line in order.lines %}
+{% for orig_idx, line in lines_with_idx %}
   {% if line.transit != ns.cur_transit %}
     {% if ns.section_open %}</div>{% endif %}
     {% set ns.cur_transit = line.transit %}
@@ -197,7 +223,7 @@ body {
     <div class="lines-section">
   {% endif %}
 
-  <div class="line-item status-{{ line.status }}" id="item-{{ loop.index0 }}">
+  <div class="line-item status-{{ line.status }}" id="item-{{ orig_idx }}">
     <div class="line-main">
       <div class="line-header">
         <div class="line-name">{{ line.product }}</div>
@@ -205,37 +231,38 @@ body {
       </div>
       <div class="line-pills">
         <div class="pill qty"><span class="pill-label">qty</span><span class="pill-value">{{ line.qty }} {{ line.unit }}</span></div>
-        {% if line.size   %}<div class="pill"><span class="pill-label">size</span><span class="pill-value">{{ line.size }}</span></div>{% endif %}
-        {% if line.lot    %}<div class="pill lot"><span class="pill-label">lot</span><span class="pill-value">{{ line.lot }}</span></div>{% endif %}
-        {% if line.grower %}<div class="pill"><span class="pill-label">grower</span><span class="pill-value">{{ line.grower }}</span></div>{% endif %}
-        {% if line.country%}<div class="pill"><span class="pill-label">origin</span><span class="pill-value">{{ line.country }}</span></div>{% endif %}
+        {% if line.size    %}<div class="pill"><span class="pill-label">size</span><span class="pill-value">{{ line.size }}</span></div>{% endif %}
+        {% if line.lot     %}<div class="pill lot"><span class="pill-label">lot</span><span class="pill-value">{{ line.lot }}</span></div>{% endif %}
+        {% if line.grower  %}<div class="pill"><span class="pill-label">grower</span><span class="pill-value">{{ line.grower }}</span></div>{% endif %}
+        {% if line.country %}<div class="pill"><span class="pill-label">origin</span><span class="pill-value">{{ line.country }}</span></div>{% endif %}
         {% if line.arr_date%}<div class="pill arr"><span class="pill-label">arr.</span><span class="pill-value">{{ line.arr_date }}</span></div>{% endif %}
-        {% if line.pallet %}<div class="pill"><span class="pill-label">pallet</span><span class="pill-value">{{ line.pallet }}</span></div>{% endif %}
+        {% if line.pallet  %}<div class="pill"><span class="pill-label">pallet</span><span class="pill-value">{{ line.pallet }}</span></div>{% endif %}
       </div>
     </div>
 
     <div class="line-actions">
-      <button class="act-seg {% if line.status=='picked' %}sel-picked{% endif %}"   id="seg-picked-{{ loop.index0 }}"  onclick="setStatus({{ loop.index0 }},'picked')">✓ Picked</button>
-      <button class="act-seg {% if line.status=='short' %}sel-short{% endif %}"    id="seg-short-{{ loop.index0 }}"   onclick="setStatus({{ loop.index0 }},'short')">⚠ Short</button>
-      <button class="act-seg {% if line.status=='missing' %}sel-missing{% endif %}" id="seg-missing-{{ loop.index0 }}" onclick="setStatus({{ loop.index0 }},'missing')">✕ Missing</button>
+      <button class="act-seg {% if line.status=='picked'  %}sel-picked{% endif %}"  id="seg-picked-{{ orig_idx }}"  onclick="setStatus({{ orig_idx }},'picked')">✓ Picked</button>
+      <button class="act-seg {% if line.status=='short'   %}sel-short{% endif %}"   id="seg-short-{{ orig_idx }}"   onclick="setStatus({{ orig_idx }},'short')">⚠ Short</button>
+      <button class="act-seg {% if line.status=='missing' %}sel-missing{% endif %}" id="seg-missing-{{ orig_idx }}" onclick="setStatus({{ orig_idx }},'missing')">✕ Miss.</button>
+      <button class="act-seg {% if line.status=='later'   %}sel-later{% endif %}"   id="seg-later-{{ orig_idx }}"   onclick="setStatus({{ orig_idx }},'later')">🕐 Later</button>
     </div>
 
-    <div class="short-row {% if line.status=='short' %}show{% endif %}" id="short-row-{{ loop.index0 }}">
+    <div class="short-row {% if line.status=='short' %}show{% endif %}" id="short-row-{{ orig_idx }}">
       <span class="short-label">Actually picked:</span>
       <input class="short-input" type="number" min="0"
-             id="short-qty-{{ loop.index0 }}" value="{{ line.short_qty }}" placeholder="0"
-             onchange="saveShortQty({{ loop.index0 }})">
+             id="short-qty-{{ orig_idx }}" value="{{ line.short_qty }}" placeholder="0"
+             onchange="saveShortQty({{ orig_idx }})">
       <span class="short-of">of {{ line.qty }} {{ line.unit }}</span>
     </div>
 
-    <button class="note-toggle" onclick="toggleNote({{ loop.index0 }})">
+    <button class="note-toggle" onclick="toggleNote({{ orig_idx }})">
       <span style="font-size:14px">📝</span>
-      <span id="note-lbl-{{ loop.index0 }}">{{ 'Edit note' if line.note else 'Add note' }}</span>
+      <span id="note-lbl-{{ orig_idx }}">{{ 'Edit note' if line.note else 'Add note' }}</span>
     </button>
-    <div class="note-area-wrap {% if line.note %}show{% endif %}" id="note-wrap-{{ loop.index0 }}">
-      <textarea class="note-area" id="note-{{ loop.index0 }}" rows="2"
+    <div class="note-area-wrap {% if line.note %}show{% endif %}" id="note-wrap-{{ orig_idx }}">
+      <textarea class="note-area" id="note-{{ orig_idx }}" rows="2"
                 placeholder="e.g. Wrong grower label, 1 box damaged…"
-                onblur="saveNote({{ loop.index0 }})">{{ line.note }}</textarea>
+                onblur="saveNote({{ orig_idx }})">{{ line.note }}</textarea>
     </div>
   </div>
 {% endfor %}
@@ -274,21 +301,22 @@ const ORDER_ID  = "{{ order.order_id }}";
 const TOTAL     = {{ order.lines|length }};
 const lineData  = {{ order.lines | tojson }};
 
-const statuses  = lineData.map(l => l.status   || 'pending');
-const shortQtys = lineData.map(l => l.short_qty || '');
-const notes     = lineData.map(l => l.note      || '');
+const statuses  = lineData.map(l => l.status    || 'pending');
+const shortQtys = lineData.map(l => l.short_qty  || '');
+const notes     = lineData.map(l => l.note       || '');
 
 function updateProgress() {
   const done    = statuses.filter(s => s !== 'pending').length;
   const short   = statuses.filter(s => s === 'short').length;
   const missing = statuses.filter(s => s === 'missing').length;
+  const later   = statuses.filter(s => s === 'later').length;
   document.getElementById('counter').textContent = done + ' / ' + TOTAL;
   document.getElementById('progress').style.width = (done / TOTAL * 100) + '%';
   const btn = document.getElementById('complete-btn');
   if (done === TOTAL) {
-    const hasEx = short > 0 || missing > 0;
+    const hasEx = short > 0 || missing > 0 || later > 0;
     document.getElementById('prog-label').textContent =
-      hasEx ? '⚠️ All confirmed — ' + (short+missing) + ' exception(s)' : '✅ All items confirmed — ready to complete';
+      hasEx ? '⚠️ All confirmed — ' + (short + missing + later) + ' exception(s)' : '✅ All items confirmed — ready to complete';
     btn.classList.toggle('has-exceptions', hasEx);
     btn.textContent = hasEx ? '⚠ Complete with Exceptions' : 'Complete & Notify Manager';
   } else {
@@ -302,8 +330,8 @@ function setStatus(idx, newStatus) {
   if (statuses[idx] === newStatus) newStatus = 'pending';
   statuses[idx] = newStatus;
   document.getElementById('item-' + idx).className = 'line-item status-' + newStatus;
-  ['picked','short','missing'].forEach(s => {
-    document.getElementById('seg-'+s+'-'+idx).className = 'act-seg' + (newStatus===s ? ' sel-'+s : '');
+  ['picked', 'short', 'missing', 'later'].forEach(s => {
+    document.getElementById('seg-' + s + '-' + idx).className = 'act-seg' + (newStatus === s ? ' sel-' + s : '');
   });
   document.getElementById('short-row-' + idx).classList.toggle('show', newStatus === 'short');
   updateProgress();
@@ -331,7 +359,7 @@ function saveNote(idx) {
 function saveLine(idx) {
   fetch('/update_line/' + ORDER_ID + '/' + idx, {
     method: 'POST',
-    headers: {'Content-Type':'application/json'},
+    headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({status: statuses[idx], short_qty: shortQtys[idx], note: notes[idx]})
   });
 }
@@ -344,7 +372,7 @@ async function completeOrder() {
   const managerId = parseInt(document.getElementById('manager-select').value);
   const res  = await fetch('/complete/' + ORDER_ID, {
     method: 'POST',
-    headers: {'Content-Type':'application/json'},
+    headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({manager_id: managerId})
   });
   const data = await res.json();
@@ -352,7 +380,8 @@ async function completeOrder() {
   const picked  = statuses.filter(s => s === 'picked').length;
   const short   = statuses.filter(s => s === 'short').length;
   const missing = statuses.filter(s => s === 'missing').length;
-  const isClean = short === 0 && missing === 0;
+  const later   = statuses.filter(s => s === 'later').length;
+  const isClean = short === 0 && missing === 0 && later === 0;
 
   const wrap = document.getElementById('done-icon-wrap');
   wrap.textContent = isClean ? '🎉' : '⚠️';
@@ -366,25 +395,35 @@ async function completeOrder() {
     <div class="summary-row"><span class="summary-label">✅ Picked</span><span class="summary-value" style="color:var(--lime)">${picked}</span></div>
     ${short   ? `<div class="summary-row"><span class="summary-label">⚠ Short</span><span class="summary-value" style="color:var(--warn)">${short}</span></div>` : ''}
     ${missing ? `<div class="summary-row"><span class="summary-label">✕ Missing</span><span class="summary-value" style="color:var(--danger)">${missing}</span></div>` : ''}
+    ${later   ? `<div class="summary-row"><span class="summary-label">🕐 Later</span><span class="summary-value" style="color:var(--info)">${later}</span></div>` : ''}
     <div class="summary-row"><span class="summary-label">📦 Order</span><span class="summary-value">#${ORDER_ID}</span></div>
   `;
 
   document.getElementById('done-screen').classList.add('show');
 
-  // Keep screen awake during active picking (release on done)
   if (navigator.wakeLock) {
     try { await navigator.wakeLock.request('screen'); } catch(_) {}
   }
 }
 
 async function reopenOrder() {
-  await fetch('/reopen/' + ORDER_ID, {method:'POST'});
+  await fetch('/reopen/' + ORDER_ID, {method: 'POST'});
   document.getElementById('done-screen').classList.remove('show');
   document.getElementById('complete-btn').disabled = false;
   updateProgress();
 }
 
-// Wake lock — keep screen on while picking
+function updateCalc() {
+  const expr = document.getElementById('calc-input').value.trim();
+  const el = document.getElementById('calc-result');
+  if (!expr) { el.textContent = ''; return; }
+  if (!/^[\d\s\+\-\*\/\.\(\)]+$/.test(expr)) { el.textContent = '?'; return; }
+  try {
+    const r = Function('"use strict"; return (' + expr + ')')();
+    el.textContent = isFinite(r) ? '= ' + (Number.isInteger(r) ? r : +r.toFixed(2)) : '?';
+  } catch { el.textContent = ''; }
+}
+
 async function acquireWakeLock() {
   if (navigator.wakeLock) {
     try { await navigator.wakeLock.request('screen'); } catch(_) {}

@@ -37,7 +37,8 @@ def send_completion_email(order, manager_email):
     picked  = sum(1 for l in lines if l["status"] == "picked")
     short   = sum(1 for l in lines if l["status"] == "short")
     missing = sum(1 for l in lines if l["status"] == "missing")
-    is_clean = short == 0 and missing == 0
+    later   = sum(1 for l in lines if l["status"] == "later")
+    is_clean = short == 0 and missing == 0 and later == 0
 
     picker_name = (order.get("picker") or {}).get("name", "Unknown")
     status_label = "All Picked" if is_clean else "Completed with Exceptions"
@@ -54,6 +55,8 @@ def send_completion_email(order, manager_email):
             si, detail = "⚠️", f"{l.get('short_qty','?')}/{l['qty']} SHORT"
         elif l["status"] == "missing":
             si, detail = "❌", f"{l['qty']} MISSING"
+        elif l["status"] == "later":
+            si, detail = "🕐", f"{l['qty']} LATER (to be picked)"
         else:
             si, detail = "⬜", str(l["qty"])
         lot_str  = f" [lot {l['lot']}]" if l.get("lot") else ""
@@ -69,6 +72,7 @@ def send_completion_email(order, manager_email):
     summary_html = f"✅ {picked} picked"
     if short:   summary_html += f" &nbsp; ⚠️ {short} short"
     if missing: summary_html += f" &nbsp; ❌ {missing} missing"
+    if later:   summary_html += f" &nbsp; 🕐 {later} later"
 
     html = f"""<html><body style="font-family:'Helvetica Neue',sans-serif;color:#1a1a1e;max-width:600px;margin:0 auto;padding:24px">
 <div style="background:{bg};border-radius:12px;padding:20px 24px;margin-bottom:20px">
@@ -96,7 +100,7 @@ def send_completion_email(order, manager_email):
         f"Order #{order['order_id']} — {status_label}\n"
         f"{order.get('customer','')}\n"
         f"Picker: {picker_name}  |  Departure: {order.get('departure_date','—')}\n"
-        f"Summary: {picked}/{total} picked, {short} short, {missing} missing\n\n"
+        f"Summary: {picked}/{total} picked, {short} short, {missing} missing, {later} later\n\n"
         + "\n".join(plain_lines)
     )
 
