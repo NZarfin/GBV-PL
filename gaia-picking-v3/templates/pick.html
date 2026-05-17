@@ -140,6 +140,8 @@ body {
 .email-sent-banner { margin-top: 20px; display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--accent); font-weight: 600; background: #e8f5ee; padding: 12px 20px; border-radius: 12px; width: 100%; max-width: 360px; justify-content: center; }
 .reopen-btn { margin-top: 12px; padding: 13px 24px; border-radius: 12px; border: 1.5px solid var(--border); background: transparent; color: var(--text2); font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; max-width: 360px; }
 .reopen-btn:active { opacity: 0.7; }
+.home-btn { display: block; margin-top: 12px; padding: 13px 24px; border-radius: 12px; border: 1.5px solid var(--border); background: transparent; color: var(--text2); font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600; text-decoration: none; width: 100%; max-width: 360px; text-align: center; box-sizing: border-box; }
+.home-btn:active { opacity: 0.7; }
 </style>
 </head>
 <body>
@@ -264,6 +266,7 @@ body {
     <span>📧</span> Email sent to manager
   </div>
   <button class="reopen-btn" onclick="reopenOrder()">↩ Reopen — more items arriving later</button>
+  <a href="/" class="home-btn">⌂ Back to Home</a>
 </div>
 
 <script>
