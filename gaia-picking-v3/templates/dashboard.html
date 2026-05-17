@@ -212,12 +212,23 @@ body {
 .badge-updated     { background: #f3e8ff; color: #6b21a8; }
 .line-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
 .chip {
-  display: flex; align-items: center; gap: 6px;
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
   background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 8px; padding: 5px 10px; font-size: 12px; color: var(--text2);
+  border-radius: 8px; padding: 6px 10px; font-size: 12px; color: var(--text2);
 }
-.chip .chip-qty { font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; }
-.chip .chip-lot { color: var(--info); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+.chip.chip-transit { background: #fff8e1; border-color: #ffe082; }
+.chip .chip-qty    { font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; }
+.chip .chip-lot    { color: var(--info); font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; }
+.chip .chip-grower { color: var(--text2); font-size: 11px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
+.chip .chip-arr    { color: #856404; font-size: 11px; font-weight: 600; }
+.order-summary-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.transit-badge { display: inline-flex; align-items: center; gap: 4px; background: #fff8e1; border: 1px solid #ffe082; border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 600; color: #856404; }
+.pallet-tally  { font-size: 12px; color: var(--text2); font-family: 'JetBrains Mono', monospace; }
+.pallet-legend { display: flex; align-items: center; gap: 16px; padding: 8px 32px; background: var(--surface); border-bottom: 1px solid var(--border); font-size: 12px; color: var(--text2); }
+.legend-title { font-weight: 600; color: var(--text2); }
+.legend-item  { display: flex; align-items: center; gap: 5px; }
+.legend-block { width: 10px; height: 10px; background: #8B6355; border-radius: 2px; }
+.legend-euro  { width: 10px; height: 10px; background: #F0C040; border-radius: 2px; }
 .order-actions { display: flex; align-items: center; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
 .btn {
   display: inline-flex; align-items: center; gap: 6px;
@@ -474,6 +485,13 @@ select:focus { outline: none; border-color: var(--accent); }
     <div class="stat-card"><div class="stat-label">Updates</div><div class="stat-value purple">{{ updated }}</div></div>
   </div>
 
+  <!-- Pallet legend -->
+  <div class="pallet-legend">
+    <span class="legend-title">Pallets:</span>
+    <span class="legend-item"><span class="legend-block"></span> Block = 1.00p</span>
+    <span class="legend-item"><span class="legend-euro"></span> Euro = 0.75p</span>
+  </div>
+
   <!-- Orders -->
   <div class="orders-area">
     {% if not orders %}
@@ -546,16 +564,36 @@ select:focus { outline: none; border-color: var(--accent); }
           </div>
         </div>
 
+        <!-- Transit + pallet summary -->
+        {% set ns2 = namespace(block=0, euro=0, transit=0) %}
+        {% for l in order.lines %}
+          {% if l.pallet == 'Block' %}{% set ns2.block = ns2.block + 1 %}{% endif %}
+          {% if l.pallet == 'Euro'  %}{% set ns2.euro  = ns2.euro  + 1 %}{% endif %}
+          {% if l.arr_date          %}{% set ns2.transit = ns2.transit + 1 %}{% endif %}
+        {% endfor %}
+        <div class="order-summary-row">
+          {% if ns2.transit > 0 %}
+          <span class="transit-badge">🕐 {{ ns2.transit }} in transit</span>
+          {% endif %}
+          <span class="pallet-tally">
+            {% if ns2.block %}🟫 {{ ns2.block }}×Block{% endif %}{% if ns2.block and ns2.euro %} · {% endif %}{% if ns2.euro %}🟨 {{ ns2.euro }}×Euro{% endif %}
+            = {{ "%.2f"|format(ns2.block * 1.0 + ns2.euro * 0.75) }}p
+          </span>
+        </div>
+
         <!-- Line chips -->
         <div class="line-chips">
           {% for line in order.lines %}
-          <div class="chip">
+          <div class="chip {% if line.arr_date %}chip-transit{% endif %}">
             <span class="chip-qty">{{ line.qty }}×</span>
             <span>{{ line.product }}</span>
-            {% if line.lot %}<span class="chip-lot">{{ line.lot }}</span>{% endif %}
-            {% if line.status == 'picked' %}<span style="color:var(--lime)">✓</span>
-            {% elif line.status == 'short' %}<span style="color:var(--warn)">⚠</span>
+            {% if line.lot    %}<span class="chip-lot">{{ line.lot }}</span>{% endif %}
+            {% if line.grower %}<span class="chip-grower">{{ line.grower }}</span>{% endif %}
+            {% if line.arr_date %}<span class="chip-arr">🕐 {{ line.arr_date }}</span>{% endif %}
+            {% if line.status == 'picked'  %}<span style="color:var(--lime)">✓</span>
+            {% elif line.status == 'short'   %}<span style="color:var(--warn)">⚠</span>
             {% elif line.status == 'missing' %}<span style="color:var(--danger)">✕</span>
+            {% elif line.status == 'later'   %}<span style="color:var(--info)">🕐</span>
             {% endif %}
           </div>
           {% endfor %}

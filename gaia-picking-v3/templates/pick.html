@@ -91,9 +91,16 @@ body {
 .pill { display: flex; align-items: center; gap: 4px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; font-size: 11px; }
 .pill-label { color: var(--text3); font-weight: 500; }
 .pill-value { color: var(--text); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
-.pill.lot .pill-value { color: var(--info); }
-.pill.qty .pill-value { color: var(--accent); font-size: 12px; }
-.pill.arr .pill-value { color: var(--warn); }
+.pill.lot  { background: #e8f0fe; border-color: #c0d0f8; }
+.pill.lot  .pill-label { color: #5578cc; }
+.pill.lot  .pill-value { color: var(--info); font-size: 12px; }
+.pill.grw  { background: #f0f9f3; border-color: #b8dfc8; }
+.pill.grw  .pill-label { color: #3a7a56; }
+.pill.grw  .pill-value { color: var(--accent); font-size: 11px; }
+.pill.arr  { background: #fff8e1; border-color: #ffe082; }
+.pill.arr  .pill-label { color: #856404; }
+.pill.arr  .pill-value { color: #856404; font-weight: 700; }
+.pill.qty  .pill-value { color: var(--accent); font-size: 13px; font-weight: 700; }
 
 /* ── Segmented buttons ── */
 .line-actions { display: flex; margin: 0 16px 14px; border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface2); }
@@ -233,7 +240,7 @@ body {
         <div class="pill qty"><span class="pill-label">qty</span><span class="pill-value">{{ line.qty }} {{ line.unit }}</span></div>
         {% if line.size    %}<div class="pill"><span class="pill-label">size</span><span class="pill-value">{{ line.size }}</span></div>{% endif %}
         {% if line.lot     %}<div class="pill lot"><span class="pill-label">lot</span><span class="pill-value">{{ line.lot }}</span></div>{% endif %}
-        {% if line.grower  %}<div class="pill"><span class="pill-label">grower</span><span class="pill-value">{{ line.grower }}</span></div>{% endif %}
+        {% if line.grower  %}<div class="pill grw"><span class="pill-label">grower</span><span class="pill-value">{{ line.grower }}</span></div>{% endif %}
         {% if line.country %}<div class="pill"><span class="pill-label">origin</span><span class="pill-value">{{ line.country }}</span></div>{% endif %}
         {% if line.arr_date%}<div class="pill arr"><span class="pill-label">arr.</span><span class="pill-value">{{ line.arr_date }}</span></div>{% endif %}
         {% if line.pallet  %}<div class="pill"><span class="pill-label">pallet</span><span class="pill-value">{{ line.pallet }}</span></div>{% endif %}

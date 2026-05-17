@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<FormattedReport xmlns='urn:crystal-reports:schemas' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
+<FormattedAreaPair Level="0" Type="Report">
+<FormattedAreaPair Level="1" Type="Group">
+<FormattedArea Type="Header">
+<FormattedSections>
+<FormattedSection SectionNumber="0">
+<FormattedReportObjects>
+<FormattedReportObject xsi:type="CTFormattedText"><ObjectName>Text7</ObjectName>
+<TextValue>Greenfield Supermarkets
+London, UK</TextValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:float" FieldName="{{VRKH.VKHORDNR}}"><ObjectName>VKHORDNR1</ObjectName>
+<FormattedValue>50.101</FormattedValue><Value>50101.00</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:date" FieldName="{{VRKH.VKHDAT}}"><ObjectName>VKHDAT1</ObjectName>
+<FormattedValue>14-05-2026</FormattedValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{{VRKH.VKHBHUSR}}"><ObjectName>VKHBHUSR1</ObjectName>
+<FormattedValue>NADAV</FormattedValue><Value>NADAV</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{{REL_TRNS.RELNAAM1}}"><ObjectName>RELNAAM12</ObjectName>
+<FormattedValue>DHL Freight</FormattedValue><Value>DHL Freight</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:date" FieldName="{{VRKH.VKHVDAT}}"><ObjectName>VKHVDAT1</ObjectName>
+<FormattedValue>19-05-2026</FormattedValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{{LEVC.LVCOMS}}"><ObjectName>LVCOMS1</ObjectName>
+<FormattedValue>Delivered Duty Paid</FormattedValue><Value>Delivered Duty Paid</Value>
+</FormattedReportObject>
+</FormattedReportObjects>
+</FormattedSection>
+<FormattedSection SectionNumber="2"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+</FormattedSections>
+</FormattedArea>
+<FormattedAreaPair Level="2" Type="Group">
+<FormattedArea Type="Header">
+<FormattedSections><FormattedSection SectionNumber="0">
+<FormattedReportObjects>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="GroupName ({{@Awz_Rol}})"><ObjectName>GroupNameAwzRol1</ObjectName>
+<FormattedValue></FormattedValue><Value></Value>
+</FormattedReportObject>
+</FormattedReportObjects>
+</FormattedSection></FormattedSections>
+</FormattedArea>
+<FormattedAreaPair Level="3" Type="Group">
+<FormattedArea Type="Header">
+<FormattedSections><FormattedSection SectionNumber="0">
+<FormattedReportObjects>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="GroupName ({{ARTGRP.AGPOMS}})"><ObjectName>GroupNameAGPOMS1</ObjectName>
+<FormattedValue>BAGS</FormattedValue><Value>BAGS</Value>
+</FormattedReportObject>
+</FormattedReportObjects>
+</FormattedSection></FormattedSections>
+</FormattedArea>
+<FormattedAreaPair Level="4" Type="Group">
+<FormattedAreaPair Level="5" Type="Group">
+<FormattedAreaPair Level="6" Type="Details">
+<FormattedArea Type="Details">
+<FormattedSections>
+<FormattedSection SectionNumber="0">
+<FormattedReportObjects>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{EENH_VRD.EHDAFKRT}"><ObjectName>EHDAFKRT1</ObjectName>
+<FormattedValue>Cl</FormattedValue><Value>Cl</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{ARTVARMT.AVMACODE}"><ObjectName>AVMACODE2</ObjectName>
+<FormattedValue>20X100G</FormattedValue><Value>20X100G</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:float" FieldName="{VRKD.VKDAANBS}"><ObjectName>VKDAANBS1</ObjectName>
+<FormattedValue>8</FormattedValue><Value>8.0</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{ART.ARTOMS}"><ObjectName>ARTOMS3</ObjectName>
+<FormattedValue>Basilicum 100 g Flowpack Bags</FormattedValue><Value>Basilicum 100 g Flowpack Bags</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedText"><ObjectName>Text20</ObjectName>
+<TextValue>-.-.26.041</TextValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xGrower}"><ObjectName>xGrower1</ObjectName>
+<FormattedValue>Van den Berg</FormattedValue><Value>Van den Berg</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:date" FieldName="{INKH.IKHADAT}"><ObjectName>IKHADAT1</ObjectName>
+<FormattedValue></FormattedValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xPallet}"><ObjectName>xPallet1</ObjectName>
+<FormattedValue>Block</FormattedValue><Value>Block</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xLandLeverancier}"><ObjectName>xLandLeverancier1</ObjectName>
+<FormattedValue>NL</FormattedValue><Value>NL</Value>
+</FormattedReportObject>
+</FormattedReportObjects>
+</FormattedSection>
+<FormattedSection SectionNumber="1"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+<FormattedSection SectionNumber="2"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+<FormattedSection SectionNumber="3"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+</FormattedSections>
+</FormattedArea>
+</FormattedAreaPair>
+<FormattedAreaPair Level="6" Type="Details">
+<FormattedArea Type="Details">
+<FormattedSections>
+<FormattedSection SectionNumber="0">
+<FormattedReportObjects>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{EENH_VRD.EHDAFKRT}"><ObjectName>EHDAFKRT1</ObjectName>
+<FormattedValue>Cl</FormattedValue><Value>Cl</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{ARTVARMT.AVMACODE}"><ObjectName>AVMACODE2</ObjectName>
+<FormattedValue>20X100G</FormattedValue><Value>20X100G</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:float" FieldName="{VRKD.VKDAANBS}"><ObjectName>VKDAANBS1</ObjectName>
+<FormattedValue>5</FormattedValue><Value>5.0</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{ART.ARTOMS}"><ObjectName>ARTOMS3</ObjectName>
+<FormattedValue>Chervil 100 g Flowpack Bags</FormattedValue><Value>Chervil 100 g Flowpack Bags</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedText"><ObjectName>Text20</ObjectName>
+<TextValue>-.-.26.038</TextValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xGrower}"><ObjectName>xGrower1</ObjectName>
+<FormattedValue>De Groot</FormattedValue><Value>De Groot</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:date" FieldName="{INKH.IKHADAT}"><ObjectName>IKHADAT1</ObjectName>
+<FormattedValue></FormattedValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xPallet}"><ObjectName>xPallet1</ObjectName>
+<FormattedValue>Block</FormattedValue><Value>Block</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xLandLeverancier}"><ObjectName>xLandLeverancier1</ObjectName>
+<FormattedValue>NL</FormattedValue><Value>NL</Value>
+</FormattedReportObject>
+</FormattedReportObjects>
+</FormattedSection>
+<FormattedSection SectionNumber="1"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+<FormattedSection SectionNumber="2"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+<FormattedSection SectionNumber="3"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+</FormattedSections>
+</FormattedArea>
+</FormattedAreaPair>
+<FormattedAreaPair Level="6" Type="Details">
+<FormattedArea Type="Details">
+<FormattedSections>
+<FormattedSection SectionNumber="0">
+<FormattedReportObjects>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{EENH_VRD.EHDAFKRT}"><ObjectName>EHDAFKRT1</ObjectName>
+<FormattedValue>Cl</FormattedValue><Value>Cl</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{ARTVARMT.AVMACODE}"><ObjectName>AVMACODE2</ObjectName>
+<FormattedValue>20X100G</FormattedValue><Value>20X100G</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:float" FieldName="{VRKD.VKDAANBS}"><ObjectName>VKDAANBS1</ObjectName>
+<FormattedValue>6</FormattedValue><Value>6.0</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{ART.ARTOMS}"><ObjectName>ARTOMS3</ObjectName>
+<FormattedValue>Coriander 100 g Flowpack Bags</FormattedValue><Value>Coriander 100 g Flowpack Bags</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedText"><ObjectName>Text20</ObjectName>
+<TextValue>-.-.26.019</TextValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xGrower}"><ObjectName>xGrower1</ObjectName>
+<FormattedValue></FormattedValue><Value></Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:date" FieldName="{INKH.IKHADAT}"><ObjectName>IKHADAT1</ObjectName>
+<FormattedValue></FormattedValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xPallet}"><ObjectName>xPallet1</ObjectName>
+<FormattedValue>Block</FormattedValue><Value>Block</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xLandLeverancier}"><ObjectName>xLandLeverancier1</ObjectName>
+<FormattedValue>MA</FormattedValue><Value>MA</Value>
+</FormattedReportObject>
+</FormattedReportObjects>
+</FormattedSection>
+<FormattedSection SectionNumber="1"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+<FormattedSection SectionNumber="2"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+<FormattedSection SectionNumber="3"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+</FormattedSections>
+</FormattedArea>
+</FormattedAreaPair>
+<FormattedAreaPair Level="6" Type="Details">
+<FormattedArea Type="Details">
+<FormattedSections>
+<FormattedSection SectionNumber="0">
+<FormattedReportObjects>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{EENH_VRD.EHDAFKRT}"><ObjectName>EHDAFKRT1</ObjectName>
+<FormattedValue>Cl</FormattedValue><Value>Cl</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{ARTVARMT.AVMACODE}"><ObjectName>AVMACODE2</ObjectName>
+<FormattedValue>20X100G</FormattedValue><Value>20X100G</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:float" FieldName="{VRKD.VKDAANBS}"><ObjectName>VKDAANBS1</ObjectName>
+<FormattedValue>3</FormattedValue><Value>3.0</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{ART.ARTOMS}"><ObjectName>ARTOMS3</ObjectName>
+<FormattedValue>Dill 100 g Flowpack Bags</FormattedValue><Value>Dill 100 g Flowpack Bags</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedText"><ObjectName>Text20</ObjectName>
+<TextValue>-.-.26.033</TextValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xGrower}"><ObjectName>xGrower1</ObjectName>
+<FormattedValue>Sijm</FormattedValue><Value>Sijm</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:date" FieldName="{INKH.IKHADAT}"><ObjectName>IKHADAT1</ObjectName>
+<FormattedValue></FormattedValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xPallet}"><ObjectName>xPallet1</ObjectName>
+<FormattedValue>Block</FormattedValue><Value>Block</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xLandLeverancier}"><ObjectName>xLandLeverancier1</ObjectName>
+<FormattedValue>NL</FormattedValue><Value>NL</Value>
+</FormattedReportObject>
+</FormattedReportObjects>
+</FormattedSection>
+<FormattedSection SectionNumber="1"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+<FormattedSection SectionNumber="2"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+<FormattedSection SectionNumber="3"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+</FormattedSections>
+</FormattedArea>
+</FormattedAreaPair>
+<FormattedAreaPair Level="6" Type="Details">
+<FormattedArea Type="Details">
+<FormattedSections>
+<FormattedSection SectionNumber="0">
+<FormattedReportObjects>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{EENH_VRD.EHDAFKRT}"><ObjectName>EHDAFKRT1</ObjectName>
+<FormattedValue>Cl</FormattedValue><Value>Cl</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{ARTVARMT.AVMACODE}"><ObjectName>AVMACODE2</ObjectName>
+<FormattedValue>20X100G</FormattedValue><Value>20X100G</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:float" FieldName="{VRKD.VKDAANBS}"><ObjectName>VKDAANBS1</ObjectName>
+<FormattedValue>4</FormattedValue><Value>4.0</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{ART.ARTOMS}"><ObjectName>ARTOMS3</ObjectName>
+<FormattedValue>Chives 100 g Flowpack Bags</FormattedValue><Value>Chives 100 g Flowpack Bags</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedText"><ObjectName>Text20</ObjectName>
+<TextValue>-.-.26.055</TextValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xGrower}"><ObjectName>xGrower1</ObjectName>
+<FormattedValue>De Groot</FormattedValue><Value>De Groot</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:date" FieldName="{INKH.IKHADAT}"><ObjectName>IKHADAT1</ObjectName>
+<FormattedValue></FormattedValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xPallet}"><ObjectName>xPallet1</ObjectName>
+<FormattedValue>Block</FormattedValue><Value>Block</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xLandLeverancier}"><ObjectName>xLandLeverancier1</ObjectName>
+<FormattedValue>NL</FormattedValue><Value>NL</Value>
+</FormattedReportObject>
+</FormattedReportObjects>
+</FormattedSection>
+<FormattedSection SectionNumber="1"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+<FormattedSection SectionNumber="2"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+<FormattedSection SectionNumber="3"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+</FormattedSections>
+</FormattedArea>
+</FormattedAreaPair>
+<FormattedAreaPair Level="6" Type="Details">
+<FormattedArea Type="Details">
+<FormattedSections>
+<FormattedSection SectionNumber="0">
+<FormattedReportObjects>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{EENH_VRD.EHDAFKRT}"><ObjectName>EHDAFKRT1</ObjectName>
+<FormattedValue>Cl</FormattedValue><Value>Cl</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{ARTVARMT.AVMACODE}"><ObjectName>AVMACODE2</ObjectName>
+<FormattedValue>20X100G</FormattedValue><Value>20X100G</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:float" FieldName="{VRKD.VKDAANBS}"><ObjectName>VKDAANBS1</ObjectName>
+<FormattedValue>2</FormattedValue><Value>2.0</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{ART.ARTOMS}"><ObjectName>ARTOMS3</ObjectName>
+<FormattedValue>Tarragon 100 g Flowpack Bags</FormattedValue><Value>Tarragon 100 g Flowpack Bags</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedText"><ObjectName>Text20</ObjectName>
+<TextValue>-.-.26.051</TextValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xGrower}"><ObjectName>xGrower1</ObjectName>
+<FormattedValue>Hortibel</FormattedValue><Value>Hortibel</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:date" FieldName="{INKH.IKHADAT}"><ObjectName>IKHADAT1</ObjectName>
+<FormattedValue>20-05-2026</FormattedValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xPallet}"><ObjectName>xPallet1</ObjectName>
+<FormattedValue>Block</FormattedValue><Value>Block</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xLandLeverancier}"><ObjectName>xLandLeverancier1</ObjectName>
+<FormattedValue>BE</FormattedValue><Value>BE</Value>
+</FormattedReportObject>
+</FormattedReportObjects>
+</FormattedSection>
+<FormattedSection SectionNumber="1"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+<FormattedSection SectionNumber="2"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+<FormattedSection SectionNumber="3"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+</FormattedSections>
+</FormattedArea>
+</FormattedAreaPair>
+</FormattedAreaPair>
+</FormattedAreaPair>
+</FormattedAreaPair>
+<FormattedAreaPair Level="3" Type="Group">
+<FormattedArea Type="Header">
+<FormattedSections><FormattedSection SectionNumber="0">
+<FormattedReportObjects>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="GroupName ({{ARTGRP.AGPOMS}})"><ObjectName>GroupNameAGPOMS1</ObjectName>
+<FormattedValue>FLOWPACK</FormattedValue><Value>FLOWPACK</Value>
+</FormattedReportObject>
+</FormattedReportObjects>
+</FormattedSection></FormattedSections>
+</FormattedArea>
+<FormattedAreaPair Level="4" Type="Group">
+<FormattedAreaPair Level="5" Type="Group">
+<FormattedAreaPair Level="6" Type="Details">
+<FormattedArea Type="Details">
+<FormattedSections>
+<FormattedSection SectionNumber="0">
+<FormattedReportObjects>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{EENH_VRD.EHDAFKRT}"><ObjectName>EHDAFKRT1</ObjectName>
+<FormattedValue>Cl</FormattedValue><Value>Cl</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{ARTVARMT.AVMACODE}"><ObjectName>AVMACODE2</ObjectName>
+<FormattedValue>20X100G</FormattedValue><Value>20X100G</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:float" FieldName="{VRKD.VKDAANBS}"><ObjectName>VKDAANBS1</ObjectName>
+<FormattedValue>2</FormattedValue><Value>2.0</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{ART.ARTOMS}"><ObjectName>ARTOMS3</ObjectName>
+<FormattedValue>Bay Leaves 100 g Flowpack</FormattedValue><Value>Bay Leaves 100 g Flowpack</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedText"><ObjectName>Text20</ObjectName>
+<TextValue>-.-.26.022</TextValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xGrower}"><ObjectName>xGrower1</ObjectName>
+<FormattedValue></FormattedValue><Value></Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:date" FieldName="{INKH.IKHADAT}"><ObjectName>IKHADAT1</ObjectName>
+<FormattedValue></FormattedValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xPallet}"><ObjectName>xPallet1</ObjectName>
+<FormattedValue>Block</FormattedValue><Value>Block</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xLandLeverancier}"><ObjectName>xLandLeverancier1</ObjectName>
+<FormattedValue>NL</FormattedValue><Value>NL</Value>
+</FormattedReportObject>
+</FormattedReportObjects>
+</FormattedSection>
+<FormattedSection SectionNumber="1"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+<FormattedSection SectionNumber="2"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+<FormattedSection SectionNumber="3"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+</FormattedSections>
+</FormattedArea>
+</FormattedAreaPair>
+<FormattedAreaPair Level="6" Type="Details">
+<FormattedArea Type="Details">
+<FormattedSections>
+<FormattedSection SectionNumber="0">
+<FormattedReportObjects>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{EENH_VRD.EHDAFKRT}"><ObjectName>EHDAFKRT1</ObjectName>
+<FormattedValue>Cl</FormattedValue><Value>Cl</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{ARTVARMT.AVMACODE}"><ObjectName>AVMACODE2</ObjectName>
+<FormattedValue>20X100G</FormattedValue><Value>20X100G</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:float" FieldName="{VRKD.VKDAANBS}"><ObjectName>VKDAANBS1</ObjectName>
+<FormattedValue>4</FormattedValue><Value>4.0</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{ART.ARTOMS}"><ObjectName>ARTOMS3</ObjectName>
+<FormattedValue>Flat Parsley 100 g Flowpack</FormattedValue><Value>Flat Parsley 100 g Flowpack</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedText"><ObjectName>Text20</ObjectName>
+<TextValue>-.-.26.015</TextValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xGrower}"><ObjectName>xGrower1</ObjectName>
+<FormattedValue>Atlas Farms</FormattedValue><Value>Atlas Farms</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:date" FieldName="{INKH.IKHADAT}"><ObjectName>IKHADAT1</ObjectName>
+<FormattedValue></FormattedValue>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xPallet}"><ObjectName>xPallet1</ObjectName>
+<FormattedValue>Block</FormattedValue><Value>Block</Value>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedField" Type="xsd:string" FieldName="{@xLandLeverancier}"><ObjectName>xLandLeverancier1</ObjectName>
+<FormattedValue>MA</FormattedValue><Value>MA</Value>
+</FormattedReportObject>
+</FormattedReportObjects>
+</FormattedSection>
+<FormattedSection SectionNumber="1"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+<FormattedSection SectionNumber="2"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+<FormattedSection SectionNumber="3"><FormattedReportObjects></FormattedReportObjects></FormattedSection>
+</FormattedSections>
+</FormattedArea>
+</FormattedAreaPair>
+</FormattedAreaPair>
+</FormattedAreaPair>
+</FormattedAreaPair>
+<FormattedArea Type="Footer"><FormattedSections><FormattedSection SectionNumber="0">
+<FormattedReportObjects></FormattedReportObjects></FormattedSection></FormattedSections></FormattedArea>
+</FormattedAreaPair>
+<FormattedArea Type="Footer"><FormattedSections><FormattedSection SectionNumber="0">
+<FormattedReportObjects></FormattedReportObjects></FormattedSection></FormattedSections></FormattedArea>
+</FormattedAreaPair>
+<FormattedArea Type="Footer"><FormattedSections><FormattedSection SectionNumber="0">
+<FormattedReportObjects></FormattedReportObjects></FormattedSection></FormattedSections></FormattedArea>
+</FormattedAreaPair>
+</FormattedReport>
