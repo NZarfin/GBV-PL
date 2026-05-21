@@ -323,6 +323,59 @@ def api_orders():
     return jsonify(list(orders.values()))
 
 
+@app.route("/debug/imap")
+@require_manager
+def debug_imap():
+    import imaplib, email as email_lib
+    import config
+    result = {"host": config.IMAP_HOST, "port": config.IMAP_PORT,
+              "user": config.IMAP_USER, "pass_set": bool(config.IMAP_PASS),
+              "steps": []}
+    def log(msg):
+        result["steps"].append(msg)
+        logger.info(msg)
+    if not config.IMAP_PASS:
+        log("IMAP_PASS is empty — cannot connect")
+        return jsonify(result)
+    try:
+        log("Connecting…")
+        mail = imaplib.IMAP4_SSL(config.IMAP_HOST, config.IMAP_PORT)
+        log("Logging in…")
+        mail.login(config.IMAP_USER, config.IMAP_PASS)
+        log("Login OK")
+        mail.select("INBOX")
+        _, unseen = mail.search(None, "UNSEEN")
+        _, all_ids = mail.search(None, "ALL")
+        unseen_ids = (unseen[0] or b"").split()
+        all_count  = len((all_ids[0] or b"").split())
+        log(f"INBOX: {all_count} total, {len(unseen_ids)} unseen")
+        result["unseen"] = len(unseen_ids)
+        result["total"]  = all_count
+        emails = []
+        for mid in unseen_ids[-10:]:  # last 10 unseen
+            _, msg_data = mail.fetch(mid, "(RFC822)")
+            msg = email_lib.message_from_bytes(msg_data[0][1])
+            parts = []
+            for part in msg.walk():
+                ct = part.get_content_type()
+                fn = part.get_filename() or ""
+                if fn or ct not in ("multipart/mixed", "multipart/alternative"):
+                    parts.append({"ct": ct, "filename": fn})
+            emails.append({"subject": msg.get("Subject",""), "from": msg.get("From",""), "parts": parts})
+        result["emails"] = emails
+        # also trigger a full re-poll of ALL mail (not just unseen)
+        search = request.args.get("search", "UNSEEN")
+        from imap_poller import _poll_once
+        mail.logout()
+        log(f"Triggering poll with filter={search}…")
+        _poll_once(search)
+        log("Poll complete — check dashboard for new orders")
+    except Exception as e:
+        log(f"ERROR: {e}")
+        result["error"] = str(e)
+    return jsonify(result)
+
+
 @app.route("/test/load")
 @require_manager
 def test_load():

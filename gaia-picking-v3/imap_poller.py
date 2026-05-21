@@ -30,26 +30,42 @@ def _loop():
         time.sleep(POLL_INTERVAL)
 
 
-def _poll_once():
+def _poll_once(search_filter="UNSEEN"):
     if not IMAP_PASS:
+        logger.warning("IMAP_PASS not set — skipping poll")
         return
-    logger.info("Polling inbox…")
+    logger.info(f"Polling inbox ({search_filter})…")
     mail = imaplib.IMAP4_SSL(IMAP_HOST, IMAP_PORT)
     mail.login(IMAP_USER, IMAP_PASS)
     mail.select("INBOX")
-    _, msg_ids = mail.search(None, "UNSEEN")
-    for mid in (msg_ids[0] or b"").split():
+    _, msg_ids = mail.search(None, search_filter)
+    ids = (msg_ids[0] or b"").split()
+    logger.info(f"Found {len(ids)} message(s) matching {search_filter}")
+    found_xml = 0
+    for mid in ids:
         _, msg_data = mail.fetch(mid, "(RFC822)")
         raw = msg_data[0][1]
         msg = email_lib.message_from_bytes(raw)
+        subject = msg.get("Subject", "")
+        logger.info(f"  Email: {subject!r}")
         for part in msg.walk():
             ct = part.get_content_type()
             fn = part.get_filename() or ""
-            if ct in ("application/xml", "text/xml") or fn.lower().endswith(".xml"):
+            logger.info(f"    Part: {ct} filename={fn!r}")
+            is_xml = (
+                ct in ("application/xml", "text/xml", "application/octet-stream")
+                or fn.lower().endswith(".xml")
+            )
+            if is_xml and fn:
                 xml_bytes = part.get_payload(decode=True)
-                incoming  = parse_picking_xml(xml_bytes)
-                if incoming:
-                    _process(incoming)
+                if xml_bytes:
+                    found_xml += 1
+                    incoming = parse_picking_xml(xml_bytes)
+                    if incoming:
+                        _process(incoming)
+                    else:
+                        logger.warning(f"    Could not parse XML from {fn!r}")
+    logger.info(f"Poll done — processed {found_xml} XML attachment(s)")
     mail.logout()
 
 
