@@ -323,6 +323,25 @@ def api_orders():
     return jsonify(list(orders.values()))
 
 
+@app.route("/api/mail-log")
+@require_manager
+def api_mail_log():
+    from imap_poller import poll_log
+    return jsonify(list(poll_log))
+
+
+@app.route("/debug/poll-now", methods=["POST"])
+@require_manager
+def debug_poll_now():
+    from imap_poller import _poll_once
+    search = request.args.get("search", "UNSEEN")
+    try:
+        _poll_once(search)
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/debug/imap")
 @require_manager
 def debug_imap():

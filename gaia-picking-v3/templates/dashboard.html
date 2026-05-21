@@ -426,6 +426,10 @@ select:focus { outline: none; border-color: var(--accent); }
       <span class="nav-icon">🧪</span>
       Load test orders
     </button>
+    <button class="nav-item" onclick="openMailLog()">
+      <span class="nav-icon">📬</span>
+      Mail log
+    </button>
   </div>
 
   <div class="sidebar-section">
@@ -797,6 +801,22 @@ select:focus { outline: none; border-color: var(--accent); }
 
 <div class="toast" id="toast"></div>
 
+<!-- Mail log drawer -->
+<div class="admin-overlay" id="mail-overlay" onclick="closeMailLog()"></div>
+<div class="admin-drawer" id="mail-drawer">
+  <div class="admin-head">
+    <div class="admin-head-title">📬 Mail Log</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="admin-add-btn" onclick="pollNow('UNSEEN')" id="poll-btn">Poll now</button>
+      <button class="admin-add-btn" onclick="pollNow('ALL')" style="color:var(--warn)">Re-read ALL</button>
+      <button class="admin-close" onclick="closeMailLog()">✕</button>
+    </div>
+  </div>
+  <div class="admin-body" id="mail-log-body">
+    <div style="color:var(--text2);font-size:13px;padding:16px 4px">Loading…</div>
+  </div>
+</div>
+
 <!-- Admin drawer -->
 <div class="admin-overlay" id="admin-overlay" onclick="closeAdmin()"></div>
 <div class="admin-drawer" id="admin-drawer">
@@ -1024,6 +1044,55 @@ async function deleteUser(id, name) {
 }
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;');
+}
+
+// ── Mail log drawer ───────────────────────────────────────────────────────────
+async function openMailLog() {
+  document.getElementById('mail-overlay').classList.add('show');
+  document.getElementById('mail-drawer').classList.add('open');
+  await refreshMailLog();
+}
+function closeMailLog() {
+  document.getElementById('mail-overlay').classList.remove('show');
+  document.getElementById('mail-drawer').classList.remove('open');
+}
+async function refreshMailLog() {
+  const res  = await fetch('/api/mail-log');
+  const log  = await res.json();
+  const body = document.getElementById('mail-log-body');
+  if (!log.length) {
+    body.innerHTML = '<div style="color:var(--text2);font-size:13px;padding:16px 4px">No activity yet — poll interval is 60s.</div>';
+    return;
+  }
+  const levelColor = { info: 'var(--text)', warning: 'var(--warn)', error: 'var(--danger)' };
+  const levelIcon  = { info: '●', warning: '⚠', error: '✕' };
+  body.innerHTML = log.map(e => {
+    const col  = levelColor[e.level] || 'var(--text)';
+    const icon = levelIcon[e.level]  || '●';
+    let detail = '';
+    if (e.subject)  detail += `<div style="font-size:11px;color:var(--text2);margin-top:2px">📧 ${esc(e.subject)}</div>`;
+    if (e.sender)   detail += `<div style="font-size:11px;color:var(--text3)">From: ${esc(e.sender)}</div>`;
+    if (e.filename) detail += `<div style="font-size:11px;color:var(--text3)">File: ${esc(e.filename)}</div>`;
+    if (e.order_id) detail += `<div style="font-size:11px;color:var(--accent);font-weight:600">→ Order #${esc(e.order_id)} ${e.customer ? '· ' + esc(e.customer) : ''}</div>`;
+    return `<div style="padding:8px 4px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <span style="color:${col};font-size:12px;font-weight:700">${icon}</span>
+        <span style="font-size:12px;color:${col};flex:1">${esc(e.msg)}</span>
+        <span style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;white-space:nowrap">${e.ts}</span>
+      </div>
+      ${detail}
+    </div>`;
+  }).join('');
+}
+async function pollNow(search) {
+  const btn = document.getElementById('poll-btn');
+  btn.textContent = 'Polling…';
+  btn.style.opacity = '0.5';
+  await fetch(`/debug/poll-now?search=${search}`, {method:'POST'});
+  await refreshMailLog();
+  btn.textContent = 'Poll now';
+  btn.style.opacity = '';
+  showToast('Poll complete — check log');
 }
 
 // Auto-refresh every 45s
